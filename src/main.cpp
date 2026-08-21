@@ -2,6 +2,7 @@
 #include <iostream>
 
 int main() {
-    std::cout << "TCP Server Version: " << get_tcp_server_version() << "\n";
+    TcpServer server;
+    std::cout << "TCP Server Version: " << server.get_version() << "\n";
     return 0;
 }
