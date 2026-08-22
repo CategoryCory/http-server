@@ -1,6 +1,6 @@
 add_executable(
     http_server_tests
-    smoke_test.cpp
+    tcp_server_test.cpp
 )
 
 target_compile_features(
@@ -9,7 +9,13 @@ target_compile_features(
     cxx_std_23
 )
 
+target_link_libraries(
+    http_server_tests
+    PRIVATE
+    http_server::lib
+)
+
 add_test(
-    NAME smoke_test
+    NAME tcp_server_test
     COMMAND http_server_tests
 )
