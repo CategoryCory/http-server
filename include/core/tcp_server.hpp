@@ -1,18 +1,21 @@
 #pragma once
 
-#include <string_view>
 #include <netinet/in.h>
-#include <unistd.h>
 
 const int DEFAULT_PORT = 8080;
 
 class TcpServer
 {
 public:
-    std::string_view get_version() const;
+    bool is_socket_initialized() const;
+    void start();
     TcpServer();
+    TcpServer(const TcpServer&) = delete;
+    TcpServer& operator=(const TcpServer&) = delete;
+    TcpServer(TcpServer&&) noexcept;
+    TcpServer& operator=(TcpServer&&) noexcept;
     ~TcpServer();
 private:
     int m_socket_fd = -1;
-    struct sockaddr_in m_server_addr;
+    struct sockaddr_in m_server_addr{};
 };

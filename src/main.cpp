@@ -3,6 +3,6 @@
 
 int main() {
     TcpServer server;
-    std::cout << "TCP Server Version: " << server.get_version() << "\n";
+    std::cout << "TCP server initialized: " << (server.is_socket_initialized() ? "yes" : "no") << "\n";
     return 0;
 }
