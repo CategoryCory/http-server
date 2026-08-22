@@ -2,12 +2,12 @@
 
 #include <netinet/in.h>
 
-const int DEFAULT_PORT = 8080;
+constexpr int DEFAULT_PORT = 8080;
 
 class TcpServer
 {
 public:
-    bool is_socket_initialized() const;
+    [[nodiscard]] bool is_socket_initialized() const;
     void start();
     TcpServer();
     TcpServer(const TcpServer&) = delete;
@@ -17,5 +17,5 @@ public:
     ~TcpServer();
 private:
     int m_socket_fd = -1;
-    struct sockaddr_in m_server_addr{};
+    sockaddr_in m_server_addr{};
 };

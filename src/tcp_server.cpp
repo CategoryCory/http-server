@@ -56,7 +56,7 @@ void TcpServer::start()
         throw std::runtime_error("Socket not initialized");
     }
 
-    if (bind(m_socket_fd, reinterpret_cast<struct sockaddr*>(&m_server_addr), sizeof(m_server_addr)) < 0)
+    if (bind(m_socket_fd, reinterpret_cast<sockaddr*>(&m_server_addr), sizeof(m_server_addr)) < 0)
     {
         throw std::runtime_error("Failed to bind socket");
     }
