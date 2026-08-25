@@ -37,11 +37,11 @@ public:
     TcpServer& operator=(const TcpServer&) = delete;
     
     /// @brief Move constructor that transfers socket ownership
-    /// @param other The TcpServer instance to move from (will be left in an uninitialized state)
+    /// @param other The TcpServer instance to move from (relinquishes ownership of its socket)
     TcpServer(TcpServer&&) noexcept;
     
     /// @brief Move assignment that transfers socket ownership and cleans up any existing socket
-    /// @param other The TcpServer instance to move from (will be left in an uninitialized state)
+    /// @param other The TcpServer instance to move from (relinquishes ownership of its socket)
     /// @return Reference to this TcpServer instance
     TcpServer& operator=(TcpServer&&) noexcept;
     
