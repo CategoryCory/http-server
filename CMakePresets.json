@@ -17,12 +17,28 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "BUILD_TESTING": "ON"
             }
+        },
+        {
+            "name": "clang-release",
+            "displayName": "Clang Release",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "BUILD_TESTING": "OFF"
+            }
         }
     ],
     "buildPresets": [
         {
             "name": "clang-debug",
             "configurePreset": "clang-debug"
+        },
+        {
+            "name": "clang-release",
+            "configurePreset": "clang-release"
         }
     ],
     "testPresets": [
