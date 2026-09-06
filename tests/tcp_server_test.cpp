@@ -24,10 +24,12 @@ void test_move_constructor()
 {
     TcpServer server1;
     assert(server1.is_socket_initialized());
-    
+
     TcpServer server2(std::move(server1));
     // After move, server2 should be initialized and server1 should not
     assert(server2.is_socket_initialized());
+
+    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the moved-from server is empty.
     assert(!server1.is_socket_initialized());
 }
 
@@ -36,15 +38,17 @@ void test_move_assignment()
 {
     TcpServer server1;
     TcpServer server2;
-    
+
     assert(server1.is_socket_initialized());
     assert(server2.is_socket_initialized());
-    
+
     // Move server1 into server2
     server2 = std::move(server1);
-    
+
     // server2 should still be initialized, server1 should not
     assert(server2.is_socket_initialized());
+
+    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the moved-from server is empty.
     assert(!server1.is_socket_initialized());
 }
 
@@ -54,13 +58,15 @@ void test_start_without_socket()
     TcpServer server1;
     TcpServer server2 = std::move(server1);
     // server1 is now uninitialized
-    
+
     try
     {
+        // NOLINTNEXTLINE(bugprone-use-after-move): verifies the moved-from server is empty.
         server1.start();
+
         assert(false && "Expected std::runtime_error");
     }
-    catch (const std::runtime_error& e)
+    catch (const std::runtime_error &e)
     {
         // Expected exception
         assert(std::string(e.what()) == "Socket not initialized");
@@ -74,6 +80,6 @@ int main()
     test_move_constructor();
     test_move_assignment();
     test_start_without_socket();
-    
+
     return 0;
 }
