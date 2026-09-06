@@ -43,7 +43,6 @@ void UniqueFileDescriptor::reset() noexcept
 
 void UniqueFileDescriptor::reset(int fd)
 {
-    // Check for invalid (negative) file descriptor
     if (fd < INVALID_FD)
     {
         throw std::invalid_argument("Invalid file descriptor: must be nonnegative or -1.");
@@ -51,11 +50,9 @@ void UniqueFileDescriptor::reset(int fd)
 
     if (fd == m_unique_fd)
     {
-        // No action needed if the new fd is the same as the current one
         return;
     }
 
-    // Close existing fd before replacing it (prevent resource leak)
     reset();
 
     m_unique_fd = fd;
