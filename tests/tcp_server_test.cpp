@@ -1,8 +1,9 @@
+#include <http/tcp_server.hpp>
+
 #include <cassert>
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <core/tcp_server.hpp>
 
 /// Test that TcpServer can be constructed successfully
 void test_construction()

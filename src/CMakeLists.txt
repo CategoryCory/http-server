@@ -1,6 +1,8 @@
 add_library(
     http_server_lib
     tcp_server.cpp
+    result.cpp
+    unique_file_descriptor.cpp
 )
 
 add_library(

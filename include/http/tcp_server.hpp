@@ -1,5 +1,7 @@
 #pragma once
 
+#include <http/unique_file_descriptor.hpp>
+
 #include <netinet/in.h>
 
 /// @brief Default port number for the TCP server
@@ -48,8 +50,8 @@ public:
     /// @brief Destructor that closes the socket if it is open
     ~TcpServer();
 private:
-    /// @brief File descriptor for the server socket (-1 if not initialized)
-    int m_socket_fd = -1;
+    /// @brief File descriptor for the server socket
+    UniqueFileDescriptor m_socket_fd;
     
     /// @brief Socket address structure containing the server's bind address and port
     sockaddr_in m_server_addr{};
