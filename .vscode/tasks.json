@@ -1,0 +1,130 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Configure: Clang Debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--preset", "clang-debug"],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Configure: Clang Release",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--preset", "clang-release"],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build: Clang Debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--build", "--preset", "clang-debug"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build: Clang Release",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--build", "--preset", "clang-release"],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean: Clang Debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--build", "--preset", "clang-debug", "--target", "clean"],
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean: Clang Release",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--build", "--preset", "clang-release", "--target", "clean"],
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Test: Clang Debug",
+            "type": "shell",
+            "command": "ctest",
+            "args": ["--preset", "clang-debug"],
+            "group": "test",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Format",
+            "type": "shell",
+            "command": "find",
+            "args": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/tests",
+                "-type",
+                "f",
+                "(",
+                "-name",
+                "*.cpp",
+                "-o",
+                "-name",
+                "*.hpp",
+                ")",
+                "-exec",
+                "/opt/homebrew/opt/llvm/bin/clang-format",
+                "-i",
+                "{}",
+                "+"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Check: Clang-Tidy",
+            "type": "shell",
+            "command": "/opt/homebrew/opt/llvm/bin/clang-tidy",
+            "args": [
+                "-p",
+                "${workspaceFolder}/build/debug",
+                "--config-file=${workspaceFolder}/.clang-tidy",
+                "${workspaceFolder}/src/main.cpp",
+                "${workspaceFolder}/src/result.cpp",
+                "${workspaceFolder}/src/tcp_server.cpp",
+                "${workspaceFolder}/src/unique_file_descriptor.cpp",
+                "${workspaceFolder}/tests/tcp_server_test.cpp"
+            ],
+            "dependsOn": "Configure: Clang Debug",
+            "dependsOrder": "sequence",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Fix: Clang-Tidy",
+            "type": "shell",
+            "command": "/opt/homebrew/opt/llvm/bin/clang-tidy",
+            "args": [
+                "-p",
+                "${workspaceFolder}/build/debug",
+                "--config-file=${workspaceFolder}/.clang-tidy",
+                "-fix",
+                "${workspaceFolder}/src/main.cpp",
+                "${workspaceFolder}/src/result.cpp",
+                "${workspaceFolder}/src/tcp_server.cpp",
+                "${workspaceFolder}/src/unique_file_descriptor.cpp",
+                "${workspaceFolder}/tests/tcp_server_test.cpp"
+            ],
+            "dependsOn": "Configure: Clang Debug",
+            "dependsOrder": "sequence",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build and Test: Clang Debug",
+            "dependsOrder": "sequence",
+            "dependsOn": ["Build: Clang Debug", "Test: Clang Debug"],
+            "group": "test"
+        }
+    ]
+}
