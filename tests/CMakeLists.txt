@@ -41,3 +41,25 @@ add_test(
     NAME unique_file_descriptor_test
     COMMAND unique_file_descriptor_tests
 )
+
+add_executable(
+    result_tests
+    result_test.cpp
+)
+
+target_compile_features(
+    result_tests
+    PRIVATE
+    cxx_std_23
+)
+
+target_link_libraries(
+    result_tests
+    PRIVATE
+    http_server::lib
+)
+
+add_test(
+    NAME result_test
+    COMMAND result_tests
+)
