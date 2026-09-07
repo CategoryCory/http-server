@@ -23,7 +23,7 @@ void test_success_without_message()
 
 void test_success_preserves_message()
 {
-    const std::string message = "Request completed";
+    constexpr std::string message = "Request completed";
     const Result result = Result::success(message);
 
     assert(result.is_success());
@@ -32,7 +32,7 @@ void test_success_preserves_message()
 
 void test_failure_preserves_message()
 {
-    const std::string message = "Unable to bind socket";
+    constexpr std::string message = "Unable to bind socket";
     const Result result = Result::failure(message);
 
     assert(!result.is_success());

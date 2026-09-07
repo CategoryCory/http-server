@@ -26,9 +26,9 @@ public:
     static Result success(const std::string& message = "");
 
     /// @brief Creates a failed result.
-    /// @param message A message describing the failure.
+    /// @param error_message A message describing the failure.
     /// @return A failed result.
-    static Result failure(const std::string& message);
+    static Result failure(const std::string& error_message);
 private:
     Result(bool success, const std::string& message)
         : m_success(success), m_message(message) {}

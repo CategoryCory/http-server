@@ -36,7 +36,7 @@ void test_default_construction()
 
 void test_empty_descriptor_construction()
 {
-    UniqueFileDescriptor descriptor(-1);
+    const UniqueFileDescriptor descriptor(-1);
 
     assert(!descriptor.is_valid());
     assert(descriptor.get() == -1);
@@ -58,7 +58,7 @@ void test_destruction_closes_descriptor()
 {
     const int fd = create_file_descriptor();
     {
-        UniqueFileDescriptor descriptor(fd);
+        const UniqueFileDescriptor descriptor(fd);
         assert(descriptor.is_valid());
         assert(descriptor);
         assert(descriptor.get() == fd);
