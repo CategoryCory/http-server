@@ -3,7 +3,7 @@ add_library(
     tcp_server.cpp
     result.cpp
     unique_file_descriptor.cpp
-    socket.cpp
+    tcp_socket.cpp
 )
 
 add_library(
