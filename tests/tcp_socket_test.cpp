@@ -2,6 +2,7 @@
 
 #include <arpa/inet.h>
 #include <cassert>
+#include <initializer_list>
 #include <stdexcept>
 #include <sys/socket.h>
 
