@@ -1,6 +1,8 @@
 #pragma once
 
+#include <http/result.hpp>
 #include <http/unique_file_descriptor.hpp>
+
 #include <netinet/in.h>
 
 /// @brief Manages an IPv4 TCP socket and its bind address.
@@ -24,6 +26,12 @@ class TcpSocket
     /// @throws std::system_error if the socket cannot be bound.
     void bind_address(int port);
 
+    /// @brief Listens for incoming connections on the bound socket.
+    /// @param max_pending_connections The maximum number of pending connections in the queue.
+    /// @throws std::logic_error if the socket has not been initialized or bound.
+    /// @throws std::system_error if the socket cannot be set to listen.
+    void listen_for_connections(int max_pending_connections);
+
     /// @brief Checks whether this instance owns an initialized socket.
     /// @return true when an initialized socket is owned; otherwise false.
     [[nodiscard]] bool is_valid() const noexcept;
@@ -31,8 +39,9 @@ class TcpSocket
     /// @brief Returns the owned socket descriptor without transferring ownership.
     /// @return The socket descriptor, or -1 if no socket is owned.
     [[nodiscard]] int get() const noexcept;
+
   private:
     UniqueFileDescriptor m_socket_fd{};
     sockaddr_in m_server_addr{};
+    Result wait_for_connection(std::uint32_t timeout_ms);
 };
-  

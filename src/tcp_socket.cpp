@@ -1,7 +1,7 @@
 #include <http/tcp_socket.hpp>
 
-#include <cstdint>
 #include <cerrno>
+#include <cstdint>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <system_error>
@@ -46,18 +46,34 @@ void TcpSocket::bind_address(int port)
     m_server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     m_server_addr.sin_port = htons(port);
 
-    if (::bind(m_socket_fd.get(), reinterpret_cast<const sockaddr*>(&m_server_addr), sizeof(m_server_addr)) < 0)
+    if (::bind(m_socket_fd.get(), reinterpret_cast<const sockaddr *>(&m_server_addr), sizeof(m_server_addr)) < 0)
     {
         throw std::system_error(errno, std::generic_category(), "Failed to bind socket");
     }
 }
 
-bool TcpSocket::is_valid() const noexcept
+void TcpSocket::listen_for_connections(int max_pending_connections)
 {
-    return m_socket_fd.is_valid();
+    if (!m_socket_fd.is_valid())
+    {
+        throw std::logic_error("Socket not initialized");
+    }
+
+    if (::listen(m_socket_fd.get(), max_pending_connections) < 0)
+    {
+        throw std::system_error(errno, std::generic_category(), "Failed to listen for connections");
+    }
 }
 
-int TcpSocket::get() const noexcept
+bool TcpSocket::is_valid() const noexcept { return m_socket_fd.is_valid(); }
+
+int TcpSocket::get() const noexcept { return m_socket_fd.get(); }
+
+Result TcpSocket::wait_for_connection(std::uint32_t timeout_ms)
 {
-    return m_socket_fd.get();
+    if (timeout_ms > 0)
+    {
+        }
+
+    return Result::success();
 }
