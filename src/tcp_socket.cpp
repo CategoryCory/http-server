@@ -1,7 +1,6 @@
 #include <http/tcp_socket.hpp>
 
 #include <cerrno>
-#include <cstdint>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <system_error>
@@ -19,7 +18,7 @@ void TcpSocket::initialize_socket()
         throw std::logic_error("Socket already initialized");
     }
 
-    auto socket_fd = ::socket(AF_INET, SOCK_STREAM, 0);
+    const auto socket_fd = ::socket(AF_INET, SOCK_STREAM, 0);
 
     if (socket_fd < 0)
     {
@@ -28,7 +27,7 @@ void TcpSocket::initialize_socket()
 
     UniqueFileDescriptor temp_fd{socket_fd};
 
-    const int option = 1;
+    constexpr int option = 1;
     const int sockopt_result = ::setsockopt(temp_fd.get(), SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
     if (sockopt_result < 0)
     {
@@ -85,8 +84,7 @@ void TcpSocket::listen_for_connections(int max_pending_connections)
     m_state = TcpSocketState::Listening;
 }
 
-TcpSocket TcpSocket::accept_connection()
-{
+TcpSocket TcpSocket::accept_connection() const {
     if (!is_valid())
     {
         throw std::logic_error("Socket not initialized");
@@ -99,7 +97,7 @@ TcpSocket TcpSocket::accept_connection()
 
     sockaddr_in client_addr{};
     socklen_t client_addr_len = sizeof(client_addr);
-    int client_fd = ::accept(m_socket_fd.get(), reinterpret_cast<sockaddr *>(&client_addr), &client_addr_len);
+    const int client_fd = ::accept(m_socket_fd.get(), reinterpret_cast<sockaddr *>(&client_addr), &client_addr_len);
 
     // TODO: Handle EINTR, EAGAIN, and other recoverable errors during accept()
     // TODO: Handle client address information if needed

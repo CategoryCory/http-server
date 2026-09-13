@@ -5,14 +5,14 @@
 
 #include <netinet/in.h>
 
-enum class ConnectionResult
+enum class ConnectionResult : std::uint8_t
 {
     Success,
     Timeout,
     Error
 };
 
-enum class TcpSocketState
+enum class TcpSocketState : std::uint8_t
 {
     Uninitialized,
     Initialized,
@@ -56,7 +56,7 @@ class TcpSocket
     /// @return A new TcpSocket instance representing the accepted connection.
     /// @throws std::logic_error if the socket has not been initialized or set to listen.
     /// @throws std::system_error if the connection cannot be accepted.
-    TcpSocket accept_connection();
+    TcpSocket accept_connection() const;
 
     /// @brief Checks whether this instance owns an initialized socket.
     /// @return true when an initialized socket is owned; otherwise false.
