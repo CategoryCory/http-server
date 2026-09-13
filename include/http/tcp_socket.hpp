@@ -5,6 +5,22 @@
 
 #include <netinet/in.h>
 
+enum class ConnectionResult
+{
+    Success,
+    Timeout,
+    Error
+};
+
+enum class TcpSocketState
+{
+    Uninitialized,
+    Initialized,
+    Bound,
+    Listening,
+    Connected
+};
+
 /// @brief Manages an IPv4 TCP socket and its bind address.
 ///
 /// Owns its underlying POSIX file descriptor and configures sockets for address
@@ -12,10 +28,14 @@
 class TcpSocket
 {
   public:
+    /// @brief Default constructor. Creates an uninitialized TcpSocket instance.
+    TcpSocket() = default;
+
     /// @brief Creates and configures an IPv4 TCP socket.
     ///
     /// Replaces any socket currently owned by this instance only after the new
     /// socket has been configured successfully.
+    /// @throws std::logic_error if the socket has already been initialized.
     /// @throws std::system_error if the socket cannot be created or configured.
     void initialize_socket();
 
@@ -32,6 +52,12 @@ class TcpSocket
     /// @throws std::system_error if the socket cannot be set to listen.
     void listen_for_connections(int max_pending_connections);
 
+    /// @brief Accepts an incoming connection on the listening socket.
+    /// @return A new TcpSocket instance representing the accepted connection.
+    /// @throws std::logic_error if the socket has not been initialized or set to listen.
+    /// @throws std::system_error if the connection cannot be accepted.
+    TcpSocket accept_connection();
+
     /// @brief Checks whether this instance owns an initialized socket.
     /// @return true when an initialized socket is owned; otherwise false.
     [[nodiscard]] bool is_valid() const noexcept;
@@ -41,7 +67,8 @@ class TcpSocket
     [[nodiscard]] int get() const noexcept;
 
   private:
+    TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state);
     UniqueFileDescriptor m_socket_fd{};
-    sockaddr_in m_server_addr{};
-    Result wait_for_connection(std::uint32_t timeout_ms);
+    sockaddr_in m_addr{};
+    TcpSocketState m_state{TcpSocketState::Uninitialized};
 };
