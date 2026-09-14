@@ -95,6 +95,18 @@ TEST(UniqueFileDescriptorTest, ResetToEmptyClosesDescriptor)
     EXPECT_EQ(descriptor.get(), -1);
 }
 
+TEST(UniqueFileDescriptorTest, ResetClosesDescriptorAndLeavesItEmpty)
+{
+    const int fd = create_file_descriptor();
+    UniqueFileDescriptor descriptor(fd);
+
+    descriptor.reset();
+
+    EXPECT_TRUE(is_closed(fd));
+    EXPECT_FALSE(descriptor.is_valid());
+    EXPECT_EQ(descriptor.get(), -1);
+}
+
 TEST(UniqueFileDescriptorTest, ResetToSameDescriptorPreservesOwnership)
 {
     const int fd = create_file_descriptor();
@@ -128,6 +140,18 @@ TEST(UniqueFileDescriptorTest, ReleaseTransfersOwnership)
     EXPECT_FALSE(descriptor.is_valid());
     EXPECT_NE(fcntl(released_fd, F_GETFD), -1);
     EXPECT_EQ(close(released_fd), 0);
+}
+
+TEST(UniqueFileDescriptorTest, MoveConstructionFromEmptyDescriptorRemainsEmpty)
+{
+    UniqueFileDescriptor source;
+
+    UniqueFileDescriptor destination(std::move(source));
+
+    EXPECT_FALSE(destination.is_valid());
+    EXPECT_EQ(destination.get(), -1);
+    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the documented moved-from state.
+    EXPECT_FALSE(source.is_valid());
 }
 
 TEST(UniqueFileDescriptorTest, MoveConstructionTransfersOwnership)
