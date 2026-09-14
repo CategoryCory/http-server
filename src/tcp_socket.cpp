@@ -13,7 +13,7 @@ TcpSocket::TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state)
 
 void TcpSocket::initialize_socket()
 {
-    if (m_addr.sin_family != 0)
+    if (m_state != TcpSocketState::Uninitialized)
     {
         throw std::logic_error("Socket already initialized");
     }
@@ -34,8 +34,8 @@ void TcpSocket::initialize_socket()
         throw std::system_error(errno, std::generic_category(), "Failed to set socket options");
     }
 
-    m_state = TcpSocketState::Initialized;
     m_socket_fd = std::move(temp_fd);
+    m_state = TcpSocketState::Initialized;
 }
 
 void TcpSocket::bind_address(int port)
@@ -45,10 +45,7 @@ void TcpSocket::bind_address(int port)
         throw std::invalid_argument("Port number must be in the range 0-65535");
     }
 
-    if (!is_valid() || m_state != TcpSocketState::Initialized)
-    {
-        throw std::logic_error("Socket not initialized");
-    }
+    require_socket_state(TcpSocketState::Initialized);
 
     m_addr = {};
 
@@ -66,15 +63,7 @@ void TcpSocket::bind_address(int port)
 
 void TcpSocket::listen_for_connections(int max_pending_connections)
 {
-    if (!is_valid())
-    {
-        throw std::logic_error("Socket not initialized");
-    }
-
-    if (m_state != TcpSocketState::Bound)
-    {
-        throw std::logic_error("Socket not bound");
-    }
+    require_socket_state(TcpSocketState::Bound);
 
     if (::listen(m_socket_fd.get(), max_pending_connections) < 0)
     {
@@ -84,16 +73,9 @@ void TcpSocket::listen_for_connections(int max_pending_connections)
     m_state = TcpSocketState::Listening;
 }
 
-TcpSocket TcpSocket::accept_connection() const {
-    if (!is_valid())
-    {
-        throw std::logic_error("Socket not initialized");
-    }
-
-    if (m_state != TcpSocketState::Listening)
-    {
-        throw std::logic_error("Socket is not in a listening state");
-    }
+TcpSocket TcpSocket::accept_connection() const
+{
+    require_socket_state(TcpSocketState::Listening);
 
     sockaddr_in client_addr{};
     socklen_t client_addr_len = sizeof(client_addr);
@@ -113,3 +95,11 @@ TcpSocket TcpSocket::accept_connection() const {
 bool TcpSocket::is_valid() const noexcept { return m_socket_fd.is_valid(); }
 
 int TcpSocket::get() const noexcept { return m_socket_fd.get(); }
+
+void TcpSocket::require_socket_state(TcpSocketState required_state) const
+{
+    if (!is_valid() || m_state != required_state)
+    {
+        throw std::logic_error("Socket is not in the required state");
+    }
+}

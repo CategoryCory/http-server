@@ -3,8 +3,10 @@
 #include <http/result.hpp>
 #include <http/unique_file_descriptor.hpp>
 
+#include <cstdint>
 #include <netinet/in.h>
 
+// TODO: Intentionally unused for now, may be used in future implementations
 enum class ConnectionResult : std::uint8_t
 {
     Success,
@@ -33,8 +35,7 @@ class TcpSocket
 
     /// @brief Creates and configures an IPv4 TCP socket.
     ///
-    /// Replaces any socket currently owned by this instance only after the new
-    /// socket has been configured successfully.
+    /// Initializes the socket and prepares it for binding and listening.
     /// @throws std::logic_error if the socket has already been initialized.
     /// @throws std::system_error if the socket cannot be created or configured.
     void initialize_socket();
@@ -71,4 +72,5 @@ class TcpSocket
     UniqueFileDescriptor m_socket_fd{};
     sockaddr_in m_addr{};
     TcpSocketState m_state{TcpSocketState::Uninitialized};
+    void require_socket_state(TcpSocketState required_state) const;
 };
