@@ -6,6 +6,12 @@
             "type": "shell",
             "command": "cmake",
             "args": ["--preset", "clang-debug"],
+            "options": {
+                "env": {
+                    "VCPKG_ROOT": "${env:HOME}/vcpkg",
+                    "PATH": "/opt/homebrew/opt/llvm/bin:${env:PATH}"
+                }
+            },
             "group": "build",
             "problemMatcher": "$gcc"
         },

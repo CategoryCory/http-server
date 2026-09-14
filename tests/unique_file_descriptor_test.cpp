@@ -1,9 +1,11 @@
 #include <http/unique_file_descriptor.hpp>
 
-#include <cassert>
 #include <cerrno>
 #include <fcntl.h>
+#include <gtest/gtest.h>
+
 #include <stdexcept>
+#include <system_error>
 #include <unistd.h>
 #include <utility>
 
@@ -12,8 +14,16 @@ namespace
 int create_file_descriptor()
 {
     int descriptors[2]{};
-    assert(pipe(descriptors) == 0);
-    assert(close(descriptors[1]) == 0);
+    if (pipe(descriptors) != 0)
+    {
+        throw std::system_error(errno, std::generic_category(), "Failed to create pipe");
+    }
+
+    if (close(descriptors[1]) != 0)
+    {
+        throw std::system_error(errno, std::generic_category(), "Failed to close pipe write end");
+    }
+
     return descriptors[0];
 }
 
@@ -23,51 +33,44 @@ bool is_closed(int fd)
     return fcntl(fd, F_GETFD) == -1 && errno == EBADF;
 }
 
-void test_default_construction()
+TEST(UniqueFileDescriptorTest, DefaultConstructionIsEmpty)
 {
     UniqueFileDescriptor descriptor;
 
-    assert(!descriptor.is_valid());
-    assert(!descriptor);
-    assert(descriptor.get() == -1);
-    assert(descriptor.release() == -1);
+    EXPECT_FALSE(descriptor.is_valid());
+    EXPECT_FALSE(descriptor);
+    EXPECT_EQ(descriptor.get(), -1);
+    EXPECT_EQ(descriptor.release(), -1);
     descriptor.reset();
 }
 
-void test_empty_descriptor_construction()
+TEST(UniqueFileDescriptorTest, EmptyDescriptorConstructionIsEmpty)
 {
     const UniqueFileDescriptor descriptor(-1);
 
-    assert(!descriptor.is_valid());
-    assert(descriptor.get() == -1);
+    EXPECT_FALSE(descriptor.is_valid());
+    EXPECT_EQ(descriptor.get(), -1);
 }
 
-void test_invalid_descriptor_rejected()
+TEST(UniqueFileDescriptorTest, ConstructionRejectsInvalidDescriptor)
 {
-    try
-    {
-        [[maybe_unused]] UniqueFileDescriptor descriptor(-2);
-        assert(false && "Expected std::invalid_argument");
-    }
-    catch (const std::invalid_argument &)
-    {
-    }
+    EXPECT_THROW([[maybe_unused]] UniqueFileDescriptor descriptor(-2), std::invalid_argument);
 }
 
-void test_destruction_closes_descriptor()
+TEST(UniqueFileDescriptorTest, DestructionClosesDescriptor)
 {
     const int fd = create_file_descriptor();
     {
         const UniqueFileDescriptor descriptor(fd);
-        assert(descriptor.is_valid());
-        assert(descriptor);
-        assert(descriptor.get() == fd);
+        EXPECT_TRUE(descriptor.is_valid());
+        EXPECT_TRUE(descriptor);
+        EXPECT_EQ(descriptor.get(), fd);
     }
 
-    assert(is_closed(fd));
+    EXPECT_TRUE(is_closed(fd));
 }
 
-void test_reset_closes_and_replaces_descriptor()
+TEST(UniqueFileDescriptorTest, ResetClosesAndReplacesDescriptor)
 {
     const int old_fd = create_file_descriptor();
     const int new_fd = create_file_descriptor();
@@ -75,79 +78,72 @@ void test_reset_closes_and_replaces_descriptor()
 
     descriptor.reset(new_fd);
 
-    assert(is_closed(old_fd));
-    assert(descriptor.get() == new_fd);
-    assert(descriptor.is_valid());
+    EXPECT_TRUE(is_closed(old_fd));
+    EXPECT_EQ(descriptor.get(), new_fd);
+    EXPECT_TRUE(descriptor.is_valid());
 }
 
-void test_reset_to_empty_closes_descriptor()
+TEST(UniqueFileDescriptorTest, ResetToEmptyClosesDescriptor)
 {
     const int fd = create_file_descriptor();
     UniqueFileDescriptor descriptor(fd);
 
     descriptor.reset(-1);
 
-    assert(is_closed(fd));
-    assert(!descriptor.is_valid());
-    assert(descriptor.get() == -1);
+    EXPECT_TRUE(is_closed(fd));
+    EXPECT_FALSE(descriptor.is_valid());
+    EXPECT_EQ(descriptor.get(), -1);
 }
 
-void test_reset_same_descriptor_preserves_ownership()
+TEST(UniqueFileDescriptorTest, ResetToSameDescriptorPreservesOwnership)
 {
     const int fd = create_file_descriptor();
     UniqueFileDescriptor descriptor(fd);
 
     descriptor.reset(fd);
 
-    assert(descriptor.get() == fd);
-    assert(fcntl(fd, F_GETFD) != -1);
+    EXPECT_EQ(descriptor.get(), fd);
+    EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
 
-void test_invalid_reset_preserves_current_descriptor()
+TEST(UniqueFileDescriptorTest, InvalidResetPreservesCurrentDescriptor)
 {
     const int fd = create_file_descriptor();
     UniqueFileDescriptor descriptor(fd);
 
-    try
-    {
-        descriptor.reset(-2);
-        assert(false && "Expected std::invalid_argument");
-    }
-    catch (const std::invalid_argument &)
-    {
-    }
+    EXPECT_THROW(descriptor.reset(-2), std::invalid_argument);
 
-    assert(descriptor.get() == fd);
-    assert(fcntl(fd, F_GETFD) != -1);
+    EXPECT_EQ(descriptor.get(), fd);
+    EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
 
-void test_release_transfers_ownership()
+TEST(UniqueFileDescriptorTest, ReleaseTransfersOwnership)
 {
     const int fd = create_file_descriptor();
     UniqueFileDescriptor descriptor(fd);
 
     const int released_fd = descriptor.release();
 
-    assert(released_fd == fd);
-    assert(!descriptor.is_valid());
-    assert(fcntl(released_fd, F_GETFD) != -1);
-    assert(close(released_fd) == 0);
+    EXPECT_EQ(released_fd, fd);
+    EXPECT_FALSE(descriptor.is_valid());
+    EXPECT_NE(fcntl(released_fd, F_GETFD), -1);
+    EXPECT_EQ(close(released_fd), 0);
 }
 
-void test_move_construction_transfers_ownership()
+TEST(UniqueFileDescriptorTest, MoveConstructionTransfersOwnership)
 {
     const int fd = create_file_descriptor();
     UniqueFileDescriptor source(fd);
 
     UniqueFileDescriptor destination(std::move(source));
 
-    assert(destination.get() == fd);
-    assert(destination.is_valid());
+    EXPECT_EQ(destination.get(), fd);
+    EXPECT_TRUE(destination.is_valid());
     // NOLINTNEXTLINE(bugprone-use-after-move): verifies the documented moved-from state.
-    assert(!source.is_valid());
+    EXPECT_FALSE(source.is_valid());
 }
 
-void test_move_assignment_releases_previous_descriptor()
+TEST(UniqueFileDescriptorTest, MoveAssignmentReleasesPreviousDescriptor)
 {
     const int source_fd = create_file_descriptor();
     const int destination_fd = create_file_descriptor();
@@ -156,13 +152,13 @@ void test_move_assignment_releases_previous_descriptor()
 
     destination = std::move(source);
 
-    assert(is_closed(destination_fd));
-    assert(destination.get() == source_fd);
+    EXPECT_TRUE(is_closed(destination_fd));
+    EXPECT_EQ(destination.get(), source_fd);
     // NOLINTNEXTLINE(bugprone-use-after-move): verifies the documented moved-from state.
-    assert(!source.is_valid());
+    EXPECT_FALSE(source.is_valid());
 }
 
-void test_self_move_assignment_preserves_descriptor()
+TEST(UniqueFileDescriptorTest, SelfMoveAssignmentPreservesDescriptor)
 {
     const int fd = create_file_descriptor();
     UniqueFileDescriptor descriptor(fd);
@@ -170,26 +166,8 @@ void test_self_move_assignment_preserves_descriptor()
 
     descriptor = std::move(same_descriptor);
 
-    assert(descriptor.get() == fd);
-    assert(descriptor.is_valid());
-    assert(fcntl(fd, F_GETFD) != -1);
+    EXPECT_EQ(descriptor.get(), fd);
+    EXPECT_TRUE(descriptor.is_valid());
+    EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
 } // namespace
-
-int main()
-{
-    test_default_construction();
-    test_empty_descriptor_construction();
-    test_invalid_descriptor_rejected();
-    test_destruction_closes_descriptor();
-    test_reset_closes_and_replaces_descriptor();
-    test_reset_to_empty_closes_descriptor();
-    test_reset_same_descriptor_preserves_ownership();
-    test_invalid_reset_preserves_current_descriptor();
-    test_release_transfers_ownership();
-    test_move_construction_transfers_ownership();
-    test_move_assignment_releases_previous_descriptor();
-    test_self_move_assignment_preserves_descriptor();
-
-    return 0;
-}

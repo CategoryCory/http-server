@@ -17,8 +17,30 @@ The project currently establishes the TCP server foundation. HTTP request handli
 - CMake 3.20 or later
 - Ninja
 - Clang with C++23 support
+- [vcpkg](https://github.com/microsoft/vcpkg)
+
+## Dependencies
+
+Test dependencies are managed with vcpkg manifest mode. Clone and bootstrap
+vcpkg, then set `VCPKG_ROOT` to its installation directory:
+
+```sh
+git clone https://github.com/microsoft/vcpkg.git "$HOME/vcpkg"
+"$HOME/vcpkg/bootstrap-vcpkg.sh"
+export VCPKG_ROOT="$HOME/vcpkg"
+```
+
+The project pins its vcpkg registry baseline in `vcpkg-configuration.json`.
+The first debug configuration installs the manifest dependencies automatically.
 
 ## Build
+
+If you configured the debug build before vcpkg integration, remove the old
+build directory once so CMake can apply the toolchain file:
+
+```sh
+rm -rf build/debug
+```
 
 ```sh
 cmake --preset clang-debug
