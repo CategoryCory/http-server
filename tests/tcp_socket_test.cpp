@@ -131,13 +131,16 @@ TEST(TcpSocketTest, AcceptingConnectionReturnsConnectedSocket)
 
     sockaddr_in listener_address{};
     socklen_t listener_address_length = sizeof(listener_address);
-    ASSERT_EQ(getsockname(listener.get(), reinterpret_cast<sockaddr *>(&listener_address), &listener_address_length), 0);
+    ASSERT_EQ(getsockname(listener.get(), reinterpret_cast<sockaddr *>(&listener_address), &listener_address_length),
+              0);
 
     UniqueFileDescriptor client_socket(::socket(AF_INET, SOCK_STREAM, 0));
     ASSERT_TRUE(client_socket.is_valid());
 
     listener_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    ASSERT_EQ(::connect(client_socket.get(), reinterpret_cast<const sockaddr *>(&listener_address), sizeof(listener_address)), 0);
+    ASSERT_EQ(
+        ::connect(client_socket.get(), reinterpret_cast<const sockaddr *>(&listener_address), sizeof(listener_address)),
+        0);
 
     TcpSocket connection = listener.accept_connection();
 
