@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 /// @brief Represents the success or failure of an operation.
 ///
@@ -23,15 +24,15 @@ public:
     /// @brief Creates a successful result.
     /// @param message An optional message describing the successful outcome.
     /// @return A successful result.
-    static Result success(const std::string& message = "");
+    static Result success(std::string message = {});
 
     /// @brief Creates a failed result.
     /// @param error_message A message describing the failure.
     /// @return A failed result.
-    static Result failure(const std::string& error_message);
+    static Result failure(std::string error_message);
 private:
-    Result(bool success, const std::string& message)
-        : m_success(success), m_message(message) {}
+    Result(bool success, std::string message)
+        : m_success(success), m_message(std::move(message)) {}
 
     bool m_success = false;
     std::string m_message{};
