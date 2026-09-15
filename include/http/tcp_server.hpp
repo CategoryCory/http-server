@@ -3,14 +3,21 @@
 #include <http/result.hpp>
 #include <http/tcp_socket.hpp>
 
-#include <cstdint>
-
 /// @brief Default port number for the TCP server
 constexpr std::uint16_t DEFAULT_PORT = 8080;
 
 /// @brief Maximum number of pending connections the server can have in its listen queue
 /// @note This value is used when calling the listen_for_connections method on the server socket
 constexpr int MAX_BACKLOG = 5;
+
+/// @brief Configuration structure for the TCP server
+struct TcpServerConfig {
+    /// @brief Port number the server will listen on
+    std::uint16_t port { DEFAULT_PORT };
+
+    /// @brief Maximum number of pending connections the server can have in its listen queue
+    int max_backlog { MAX_BACKLOG };
+};
 
 /// @brief A TCP server that listens for incoming client connections
 /// 
@@ -25,9 +32,8 @@ public:
     TcpServer() = default;
 
     /// @brief Starts the TCP server and begins listening for incoming connections
-    /// @param port The port number on which the server should listen (default is 8080)
-    /// @param max_backlog The maximum number of pending connections in the listen queue (default is 5)
-    Result start(std::uint16_t port = DEFAULT_PORT, int max_backlog = MAX_BACKLOG);
+    /// @param server_config Configuration for the TCP server
+    Result start(const TcpServerConfig& server_config);
 
     /// @brief Stops the TCP server
     void stop();

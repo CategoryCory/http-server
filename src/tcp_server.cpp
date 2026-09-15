@@ -1,12 +1,12 @@
 #include <http/tcp_server.hpp>
 
-Result TcpServer::start(std::uint16_t port, int max_backlog)
+Result TcpServer::start(const TcpServerConfig& server_config)
 {
     try
     {
         m_socket.initialize_socket();
-        m_socket.bind_address(port);
-        m_socket.listen_for_connections(max_backlog);
+        m_socket.bind_address(server_config.port);
+        m_socket.listen_for_connections(server_config.max_backlog);
     }
     catch(const std::exception& e)
     {
