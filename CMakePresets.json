@@ -7,45 +7,49 @@
     },
     "configurePresets": [
         {
-            "name": "clang-debug",
-            "displayName": "Clang Debug",
+            "name": "base",
+            "hidden": true,
             "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "inherits": "base",
             "binaryDir": "${sourceDir}/build/debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
                 "BUILD_TESTING": "ON"
             }
         },
         {
-            "name": "clang-release",
-            "displayName": "Clang Release",
-            "generator": "Ninja",
+            "name": "release",
+            "displayName": "Release",
+            "inherits": "base",
             "binaryDir": "${sourceDir}/build/release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "BUILD_TESTING": "OFF"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "clang-debug",
-            "configurePreset": "clang-debug"
+            "name": "debug",
+            "configurePreset": "debug"
         },
         {
-            "name": "clang-release",
-            "configurePreset": "clang-release"
+            "name": "release",
+            "configurePreset": "release"
         }
     ],
     "testPresets": [
         {
-            "name": "clang-debug",
-            "configurePreset": "clang-debug",
+            "name": "debug",
+            "configurePreset": "debug",
             "output": {
                 "outputOnFailure": true
             }
