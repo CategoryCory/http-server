@@ -2,63 +2,26 @@
 
 #include <gtest/gtest.h>
 
-#include <stdexcept>
-#include <string>
-#include <utility>
-
-TEST(TcpServerTest, ConstructionInitializesSocket)
+TEST(TcpServerTest, StartWithEphemeralPortSucceeds)
 {
     TcpServer server;
-    EXPECT_TRUE(server.is_socket_initialized());
+    const TcpServerConfig config{.port = 0, .max_backlog = 1};
+
+    const Result result = server.start(config);
+
+    EXPECT_TRUE(result.is_success());
+    EXPECT_TRUE(result.message().empty());
 }
 
-TEST(TcpServerTest, SocketIsInitializedAfterConstruction)
+TEST(TcpServerTest, StartReturnsFailureWhenCalledTwice)
 {
     TcpServer server;
-    EXPECT_TRUE(server.is_socket_initialized());
-}
+    const TcpServerConfig config{.port = 0, .max_backlog = 1};
 
-TEST(TcpServerTest, MoveConstructionTransfersSocketOwnership)
-{
-    TcpServer server1;
-    ASSERT_TRUE(server1.is_socket_initialized());
+    ASSERT_TRUE(server.start(config).is_success());
 
-    TcpServer server2(std::move(server1));
-    EXPECT_TRUE(server2.is_socket_initialized());
+    const Result result = server.start(config);
 
-    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the moved-from server is empty.
-    EXPECT_FALSE(server1.is_socket_initialized());
-}
-
-TEST(TcpServerTest, MoveAssignmentTransfersSocketOwnership)
-{
-    TcpServer server1;
-    TcpServer server2;
-
-    ASSERT_TRUE(server1.is_socket_initialized());
-    ASSERT_TRUE(server2.is_socket_initialized());
-
-    server2 = std::move(server1);
-
-    EXPECT_TRUE(server2.is_socket_initialized());
-
-    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the moved-from server is empty.
-    EXPECT_FALSE(server1.is_socket_initialized());
-}
-
-TEST(TcpServerTest, StartOnMovedFromServerThrows)
-{
-    TcpServer server1;
-    TcpServer server2 = std::move(server1);
-
-    try
-    {
-        // NOLINTNEXTLINE(bugprone-use-after-move): verifies the moved-from server is empty.
-        server1.start();
-        FAIL() << "Expected std::runtime_error";
-    }
-    catch (const std::runtime_error &e)
-    {
-        EXPECT_EQ(e.what(), std::string("Socket not initialized"));
-    }
+    EXPECT_FALSE(result.is_success());
+    EXPECT_EQ(result.message(), "Socket already initialized");
 }
