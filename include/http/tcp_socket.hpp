@@ -48,10 +48,10 @@ class TcpSocket
     void bind_address(int port);
 
     /// @brief Listens for incoming connections on the bound socket.
-    /// @param max_pending_connections The maximum number of pending connections in the queue.
+    /// @param max_backlog The maximum number of pending connections in the queue.
     /// @throws std::logic_error if the socket has not been initialized or bound.
     /// @throws std::system_error if the socket cannot be set to listen.
-    void listen_for_connections(int max_pending_connections);
+    void listen_for_connections(int max_backlog);
 
     /// @brief Accepts an incoming connection on the listening socket.
     /// @return A new TcpSocket instance representing the accepted connection.

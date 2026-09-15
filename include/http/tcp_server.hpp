@@ -1,11 +1,16 @@
 #pragma once
 
-#include <http/unique_file_descriptor.hpp>
+#include <http/result.hpp>
+#include <http/tcp_socket.hpp>
 
-#include <netinet/in.h>
+#include <cstdint>
 
 /// @brief Default port number for the TCP server
-constexpr int DEFAULT_PORT = 8080;
+constexpr std::uint16_t DEFAULT_PORT = 8080;
+
+/// @brief Maximum number of pending connections the server can have in its listen queue
+/// @note This value is used when calling the listen_for_connections method on the server socket
+constexpr int MAX_BACKLOG = 5;
 
 /// @brief A TCP server that listens for incoming client connections
 /// 
@@ -13,46 +18,20 @@ constexpr int DEFAULT_PORT = 8080;
 /// allowing it to accept incoming client connections. It is designed
 /// to be used as a building block for higher-level network protocols
 /// such as HTTP servers.
-/// 
-/// The class is move-enabled but non-copyable to prevent accidental
-/// duplication of socket resources. Socket resources are properly cleaned
-/// up via RAII principles in the destructor.
 class TcpServer
 {
 public:
-    /// @brief Checks if the internal socket has been successfully initialized
-    /// @return true if the socket was created successfully, false otherwise
-    [[nodiscard]] bool is_socket_initialized() const;
-    
-    /// @brief Starts the server by binding to the configured address and listening for connections
-    /// @throws std::runtime_error if the socket is not initialized, binding fails, or listening fails
-    void start();
-    
-    /// @brief Constructs a new TCP server and creates an unbound socket
-    /// @throws std::runtime_error if socket creation fails
-    TcpServer();
-    
-    /// @brief Copy construction is deleted (sockets cannot be safely copied)
-    TcpServer(const TcpServer&) = delete;
-    
-    /// @brief Copy assignment is deleted (sockets cannot be safely copied)
-    TcpServer& operator=(const TcpServer&) = delete;
-    
-    /// @brief Move constructor that transfers socket ownership
-    /// @param other The TcpServer instance to move from (relinquishes ownership of its socket)
-    TcpServer(TcpServer&&) noexcept;
-    
-    /// @brief Move assignment that transfers socket ownership and cleans up any existing socket
-    /// @param other The TcpServer instance to move from (relinquishes ownership of its socket)
-    /// @return Reference to this TcpServer instance
-    TcpServer& operator=(TcpServer&&) noexcept;
-    
-    /// @brief Destructor that closes the socket if it is open
-    ~TcpServer();
+    /// @brief Default constructor for the TCP server
+    TcpServer() = default;
+
+    /// @brief Starts the TCP server and begins listening for incoming connections
+    /// @param port The port number on which the server should listen (default is 8080)
+    /// @param max_backlog The maximum number of pending connections in the listen queue (default is 5)
+    Result start(std::uint16_t port = DEFAULT_PORT, int max_backlog = MAX_BACKLOG);
+
+    /// @brief Stops the TCP server
+    void stop();
 private:
-    /// @brief File descriptor for the server socket
-    UniqueFileDescriptor m_socket_fd;
-    
-    /// @brief Socket address structure containing the server's bind address and port
-    sockaddr_in m_server_addr{};
+    /// @brief TCP socket for the server
+    TcpSocket m_socket{};
 };
