@@ -13,10 +13,10 @@ constexpr int MAX_BACKLOG = 5;
 /// @brief Configuration structure for the TCP server
 struct TcpServerConfig {
     /// @brief Port number the server will listen on
-    std::uint16_t port { DEFAULT_PORT };
+    std::uint16_t port{};
 
     /// @brief Maximum number of pending connections the server can have in its listen queue
-    int max_backlog { MAX_BACKLOG };
+    int max_backlog{};
 };
 
 /// @brief A TCP server that listens for incoming client connections
