@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-Result TcpServer::start(const TcpServerConfig& server_config)
+Result TcpServer::start(const TcpServerConfig &server_config)
 {
     try
     {
@@ -10,7 +10,7 @@ Result TcpServer::start(const TcpServerConfig& server_config)
         m_socket.bind_address(server_config.port);
         m_socket.listen_for_connections(server_config.max_backlog);
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         return Result::failure(e.what());
     }
@@ -18,7 +18,4 @@ Result TcpServer::start(const TcpServerConfig& server_config)
     return Result::success();
 }
 
-void TcpServer::stop()
-{
-    throw std::runtime_error("TcpServer::stop() not yet implemented");
-}
+void TcpServer::stop() { throw std::runtime_error("TcpServer::stop() not yet implemented"); }

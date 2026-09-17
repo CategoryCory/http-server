@@ -10,7 +10,7 @@
 /// @brief Loads HTTP server configuration from a TOML file.
 class HttpServerConfigLoader
 {
-public:
+  public:
     /// @brief Path to the default application configuration file.
     static constexpr std::string_view DEFAULT_CONFIG_PATH = "config/http-server.toml";
 
@@ -23,15 +23,15 @@ public:
     /// @param config_path Path to the TOML configuration file.
     /// @return A successful result when parsing and validation succeed;
     ///         otherwise a failure result containing the error.
-    [[nodiscard]] Result load(const std::filesystem::path& config_path);
+    [[nodiscard]] Result load(const std::filesystem::path &config_path);
 
     /// @brief Checks whether configuration was successfully loaded.
     [[nodiscard]] bool is_loaded() const { return m_is_loaded; }
 
     /// @brief Gets the loaded application configuration.
-    [[nodiscard]] const HttpServerConfig& config() const { return m_config; }
+    [[nodiscard]] const HttpServerConfig &config() const { return m_config; }
 
-private:
+  private:
     HttpServerConfig m_config{};
     bool m_is_loaded{false};
 };

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string_view>
 
-int main(int argument_count, char* arguments[])
+int main(int argument_count, char *arguments[])
 {
     std::filesystem::path config_path{HttpServerConfigLoader::DEFAULT_CONFIG_PATH};
 

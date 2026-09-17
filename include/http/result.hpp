@@ -9,7 +9,7 @@
 /// instances with success() or failure() to make the intended state explicit.
 class Result
 {
-public:
+  public:
     /// @brief Creates a failed result with no message.
     Result() = default;
 
@@ -19,7 +19,7 @@ public:
 
     /// @brief Returns the message associated with this result.
     /// @return The outcome message, which may be empty.
-    [[nodiscard]] const std::string& message() const { return m_message; }
+    [[nodiscard]] const std::string &message() const { return m_message; }
 
     /// @brief Creates a successful result.
     /// @param message An optional message describing the successful outcome.
@@ -30,9 +30,9 @@ public:
     /// @param error_message A message describing the failure.
     /// @return A failed result.
     static Result failure(std::string error_message);
-private:
-    Result(bool success, std::string message)
-        : m_success(success), m_message(std::move(message)) {}
+
+  private:
+    Result(bool success, std::string message) : m_success(success), m_message(std::move(message)) {}
 
     bool m_success = false;
     std::string m_message{};

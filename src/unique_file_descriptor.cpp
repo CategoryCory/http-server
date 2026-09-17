@@ -14,10 +14,12 @@ UniqueFileDescriptor::UniqueFileDescriptor(int fd)
     m_unique_fd = fd;
 }
 
-UniqueFileDescriptor::UniqueFileDescriptor(UniqueFileDescriptor&& other) noexcept
-    : m_unique_fd(std::exchange(other.m_unique_fd, INVALID_FD)) { }
+UniqueFileDescriptor::UniqueFileDescriptor(UniqueFileDescriptor &&other) noexcept
+    : m_unique_fd(std::exchange(other.m_unique_fd, INVALID_FD))
+{
+}
 
-UniqueFileDescriptor& UniqueFileDescriptor::operator=(UniqueFileDescriptor&& other) noexcept
+UniqueFileDescriptor &UniqueFileDescriptor::operator=(UniqueFileDescriptor &&other) noexcept
 {
     if (this != &other)
     {
@@ -27,10 +29,7 @@ UniqueFileDescriptor& UniqueFileDescriptor::operator=(UniqueFileDescriptor&& oth
     return *this;
 }
 
-UniqueFileDescriptor::~UniqueFileDescriptor()
-{
-    reset();
-}
+UniqueFileDescriptor::~UniqueFileDescriptor() { reset(); }
 
 void UniqueFileDescriptor::reset() noexcept
 {
@@ -58,22 +57,10 @@ void UniqueFileDescriptor::reset(int fd)
     m_unique_fd = fd;
 }
 
-int UniqueFileDescriptor::get() const noexcept
-{
-    return m_unique_fd;
-}
+int UniqueFileDescriptor::get() const noexcept { return m_unique_fd; }
 
-int UniqueFileDescriptor::release() noexcept
-{
-    return std::exchange(m_unique_fd, INVALID_FD);
-}
+int UniqueFileDescriptor::release() noexcept { return std::exchange(m_unique_fd, INVALID_FD); }
 
-bool UniqueFileDescriptor::is_valid() const noexcept
-{
-    return m_unique_fd != INVALID_FD;
-}
+bool UniqueFileDescriptor::is_valid() const noexcept { return m_unique_fd != INVALID_FD; }
 
-UniqueFileDescriptor::operator bool() const noexcept
-{
-    return is_valid();
-}
+UniqueFileDescriptor::operator bool() const noexcept { return is_valid(); }

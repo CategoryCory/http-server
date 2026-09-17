@@ -7,40 +7,41 @@
 #include <stdexcept>
 #include <string_view>
 
-namespace {
-    class TemporaryConfigFile
+namespace
+{
+class TemporaryConfigFile
+{
+  public:
+    explicit TemporaryConfigFile(std::string_view contents)
+        : m_path(std::filesystem::temp_directory_path() / "http-server-config-loader-test.toml")
     {
-    public:
-        explicit TemporaryConfigFile(std::string_view contents)
-            : m_path(std::filesystem::temp_directory_path() / "http-server-config-loader-test.toml")
+        std::ofstream config_file{m_path};
+
+        if (!config_file)
         {
-            std::ofstream config_file{m_path};
-
-            if (!config_file)
-            {
-                throw std::runtime_error("Failed to create temporary configuration file");
-            }
-
-            config_file << contents;
-
-            if (!config_file)
-            {
-                throw std::runtime_error("Failed to write temporary configuration file");
-            }
+            throw std::runtime_error("Failed to create temporary configuration file");
         }
 
-        ~TemporaryConfigFile()
+        config_file << contents;
+
+        if (!config_file)
         {
-            std::error_code error;
-            std::filesystem::remove(m_path, error);
+            throw std::runtime_error("Failed to write temporary configuration file");
         }
+    }
 
-        [[nodiscard]] const std::filesystem::path& path() const { return m_path; }
+    ~TemporaryConfigFile()
+    {
+        std::error_code error;
+        std::filesystem::remove(m_path, error);
+    }
 
-    private:
-        std::filesystem::path m_path;
-    };
-}
+    [[nodiscard]] const std::filesystem::path &path() const { return m_path; }
+
+  private:
+    std::filesystem::path m_path;
+};
+} // namespace
 
 TEST(HttpServerConfigLoaderTest, LoadsDefaultConfiguration)
 {
@@ -56,11 +57,9 @@ TEST(HttpServerConfigLoaderTest, LoadsDefaultConfiguration)
 
 TEST(HttpServerConfigLoaderTest, LoadsSpecifiedConfiguration)
 {
-    const TemporaryConfigFile config_file{
-        "[tcp_server]\n"
-        "port = 9090\n"
-        "max_backlog = 10\n"
-    };
+    const TemporaryConfigFile config_file{"[tcp_server]\n"
+                                          "port = 9090\n"
+                                          "max_backlog = 10\n"};
     HttpServerConfigLoader config_loader;
 
     const Result result = config_loader.load(config_file.path());
@@ -73,10 +72,8 @@ TEST(HttpServerConfigLoaderTest, LoadsSpecifiedConfiguration)
 
 TEST(HttpServerConfigLoaderTest, RejectsMissingRequiredValue)
 {
-    const TemporaryConfigFile config_file{
-        "[tcp_server]\n"
-        "port = 8080\n"
-    };
+    const TemporaryConfigFile config_file{"[tcp_server]\n"
+                                          "port = 8080\n"};
     HttpServerConfigLoader config_loader;
 
     const Result result = config_loader.load(config_file.path());
@@ -88,11 +85,9 @@ TEST(HttpServerConfigLoaderTest, RejectsMissingRequiredValue)
 
 TEST(HttpServerConfigLoaderTest, RejectsOutOfRangePort)
 {
-    const TemporaryConfigFile config_file{
-        "[tcp_server]\n"
-        "port = 65536\n"
-        "max_backlog = 5\n"
-    };
+    const TemporaryConfigFile config_file{"[tcp_server]\n"
+                                          "port = 65536\n"
+                                          "max_backlog = 5\n"};
     HttpServerConfigLoader config_loader;
 
     const Result result = config_loader.load(config_file.path());

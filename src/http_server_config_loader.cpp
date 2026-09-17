@@ -6,12 +6,9 @@
 #include <limits>
 #include <utility>
 
-Result HttpServerConfigLoader::load()
-{
-    return load(std::filesystem::path{DEFAULT_CONFIG_PATH});
-}
+Result HttpServerConfigLoader::load() { return load(std::filesystem::path{DEFAULT_CONFIG_PATH}); }
 
-Result HttpServerConfigLoader::load(const std::filesystem::path& config_path)
+Result HttpServerConfigLoader::load(const std::filesystem::path &config_path)
 {
     m_config = {};
     m_is_loaded = false;
@@ -32,12 +29,10 @@ Result HttpServerConfigLoader::load(const std::filesystem::path& config_path)
             return Result::failure("Configuration value tcp_server.max_backlog must be a non-negative integer");
         }
 
-        m_config.tcp_server = {
-            .port = static_cast<std::uint16_t>(*port),
-            .max_backlog = static_cast<int>(*max_backlog)
-        };
+        m_config.tcp_server = {.port = static_cast<std::uint16_t>(*port),
+                               .max_backlog = static_cast<int>(*max_backlog)};
     }
-    catch(const std::exception& exception)
+    catch (const std::exception &exception)
     {
         return Result::failure(exception.what());
     }

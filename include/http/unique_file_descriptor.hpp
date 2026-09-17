@@ -6,7 +6,7 @@
 /// replaced. Instances cannot be copied but may be moved to transfer ownership.
 class UniqueFileDescriptor
 {
-public:
+  public:
     /// @brief Creates an empty descriptor owner.
     UniqueFileDescriptor() = default;
 
@@ -16,19 +16,19 @@ public:
     explicit UniqueFileDescriptor(int fd);
 
     /// @brief Copying is disabled because descriptors have unique ownership.
-    UniqueFileDescriptor(const UniqueFileDescriptor&) = delete;
+    UniqueFileDescriptor(const UniqueFileDescriptor &) = delete;
 
     /// @brief Copy assignment is disabled because descriptors have unique ownership.
-    UniqueFileDescriptor& operator=(const UniqueFileDescriptor&) = delete;
+    UniqueFileDescriptor &operator=(const UniqueFileDescriptor &) = delete;
 
     /// @brief Transfers descriptor ownership from another instance.
     /// @param other The instance to move from; it becomes empty.
-    UniqueFileDescriptor(UniqueFileDescriptor&&) noexcept;
+    UniqueFileDescriptor(UniqueFileDescriptor &&) noexcept;
 
     /// @brief Replaces this object's descriptor with one owned by another instance.
     /// @param other The instance to move from; it becomes empty.
     /// @return A reference to this object.
-    UniqueFileDescriptor& operator=(UniqueFileDescriptor&&) noexcept;
+    UniqueFileDescriptor &operator=(UniqueFileDescriptor &&) noexcept;
 
     /// @brief Closes the owned descriptor, if any.
     ~UniqueFileDescriptor();
@@ -56,7 +56,8 @@ public:
     /// @brief Returns the currently owned descriptor without transferring ownership.
     /// @return The owned descriptor, or -1 if this object is empty.
     [[nodiscard]] int get() const noexcept;
-private:
+
+  private:
     static constexpr int INVALID_FD = -1;
     int m_unique_fd = INVALID_FD;
 };
