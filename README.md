@@ -120,6 +120,38 @@ This file is ignored by Git and can contain compiler paths or other
 machine-specific configuration. Use the equivalent compiler path on Ubuntu when
 needed.
 
+### Use vcpkg from CLion
+
+CLion preset profiles are read-only. If CLion does not inherit `VCPKG_ROOT`
+from your desktop session, create an ignored `CMakeUserPresets.json` with
+presets that supply the local vcpkg path:
+
+```json
+{
+	"version": 2,
+	"configurePresets": [
+		{
+			"name": "clion-debug",
+			"inherits": "debug",
+			"environment": {
+				"VCPKG_ROOT": "/path/to/vcpkg"
+			}
+		},
+		{
+			"name": "clion-release",
+			"inherits": "release",
+			"environment": {
+				"VCPKG_ROOT": "/path/to/vcpkg"
+			}
+		}
+	]
+}
+```
+
+Replace `/path/to/vcpkg` with your vcpkg checkout, reload the CMake project in
+CLion, then select the local `clion-debug` or `clion-release` preset. Keep
+these presets local because the vcpkg path differs by machine.
+
 ### Code Quality Tools
 
 With `clang-format` and `clang-tidy` available on `PATH`, format the project
