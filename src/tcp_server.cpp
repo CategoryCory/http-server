@@ -1,5 +1,7 @@
 #include <http/tcp_server.hpp>
 
+#include <stdexcept>
+
 Result TcpServer::start(const TcpServerConfig& server_config)
 {
     try
