@@ -49,7 +49,7 @@ TEST(HttpServerConfigLoaderTest, LoadsDefaultConfiguration)
 
     const Result result = config_loader.load();
 
-    ASSERT_TRUE(result.is_success()) << result.message();
+    ASSERT_TRUE(result.is_success()) << result.error_message();
     EXPECT_TRUE(config_loader.is_loaded());
     EXPECT_EQ(config_loader.config().tcp_server.port, 8080);
     EXPECT_EQ(config_loader.config().tcp_server.max_backlog, 5);
@@ -64,7 +64,7 @@ TEST(HttpServerConfigLoaderTest, LoadsSpecifiedConfiguration)
 
     const Result result = config_loader.load(config_file.path());
 
-    ASSERT_TRUE(result.is_success()) << result.message();
+    ASSERT_TRUE(result.is_success()) << result.error_message();
     EXPECT_TRUE(config_loader.is_loaded());
     EXPECT_EQ(config_loader.config().tcp_server.port, 9090);
     EXPECT_EQ(config_loader.config().tcp_server.max_backlog, 10);
@@ -80,7 +80,7 @@ TEST(HttpServerConfigLoaderTest, RejectsMissingRequiredValue)
 
     EXPECT_FALSE(result.is_success());
     EXPECT_FALSE(config_loader.is_loaded());
-    EXPECT_EQ(result.message(), "Configuration value tcp_server.max_backlog must be a non-negative integer");
+    EXPECT_EQ(result.error_message(), "Configuration value tcp_server.max_backlog must be a non-negative integer");
 }
 
 TEST(HttpServerConfigLoaderTest, RejectsOutOfRangePort)
@@ -94,7 +94,7 @@ TEST(HttpServerConfigLoaderTest, RejectsOutOfRangePort)
 
     EXPECT_FALSE(result.is_success());
     EXPECT_FALSE(config_loader.is_loaded());
-    EXPECT_EQ(result.message(), "Configuration value tcp_server.port must be an integer from 0 to 65535");
+    EXPECT_EQ(result.error_message(), "Configuration value tcp_server.port must be an integer from 0 to 65535");
 }
 
 TEST(HttpServerConfigLoaderTest, RejectsMissingConfigurationFile)

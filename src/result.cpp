@@ -1,5 +1,5 @@
 #include <http/result.hpp>
 
-Result Result::success(std::string message) { return Result(true, std::move(message)); }
+Result Result::success() { return Result(true, {}); }
 
 Result Result::failure(std::string error_message) { return Result(false, std::move(error_message)); }

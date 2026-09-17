@@ -10,7 +10,7 @@ TEST(TcpServerTest, StartWithEphemeralPortSucceeds)
     const Result result = server.start(config);
 
     EXPECT_TRUE(result.is_success());
-    EXPECT_TRUE(result.message().empty());
+    EXPECT_TRUE(result.error_message().empty());
 }
 
 TEST(TcpServerTest, StartReturnsFailureWhenCalledTwice)
@@ -23,5 +23,5 @@ TEST(TcpServerTest, StartReturnsFailureWhenCalledTwice)
     const Result result = server.start(config);
 
     EXPECT_FALSE(result.is_success());
-    EXPECT_EQ(result.message(), "Socket already initialized");
+    EXPECT_EQ(result.error_message(), "Socket already initialized");
 }

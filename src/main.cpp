@@ -25,7 +25,7 @@ int main(int argument_count, char *arguments[])
 
     if (!config_result.is_success())
     {
-        std::cerr << "Failed to load configuration: " << config_result.message() << "\n";
+        std::cerr << "Failed to load configuration: " << config_result.error_message() << "\n";
         return 1;
     }
 
