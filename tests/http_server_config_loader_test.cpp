@@ -7,38 +7,40 @@
 #include <stdexcept>
 #include <string_view>
 
-class TemporaryConfigFile
-{
-public:
-    explicit TemporaryConfigFile(std::string_view contents)
-        : m_path(std::filesystem::temp_directory_path() / "http-server-config-loader-test.toml")
+namespace {
+    class TemporaryConfigFile
     {
-        std::ofstream config_file{m_path};
-
-        if (!config_file)
+    public:
+        explicit TemporaryConfigFile(std::string_view contents)
+            : m_path(std::filesystem::temp_directory_path() / "http-server-config-loader-test.toml")
         {
-            throw std::runtime_error("Failed to create temporary configuration file");
+            std::ofstream config_file{m_path};
+
+            if (!config_file)
+            {
+                throw std::runtime_error("Failed to create temporary configuration file");
+            }
+
+            config_file << contents;
+
+            if (!config_file)
+            {
+                throw std::runtime_error("Failed to write temporary configuration file");
+            }
         }
 
-        config_file << contents;
-
-        if (!config_file)
+        ~TemporaryConfigFile()
         {
-            throw std::runtime_error("Failed to write temporary configuration file");
+            std::error_code error;
+            std::filesystem::remove(m_path, error);
         }
-    }
 
-    ~TemporaryConfigFile()
-    {
-        std::error_code error;
-        std::filesystem::remove(m_path, error);
-    }
+        [[nodiscard]] const std::filesystem::path& path() const { return m_path; }
 
-    [[nodiscard]] const std::filesystem::path& path() const { return m_path; }
-
-private:
-    std::filesystem::path m_path;
-};
+    private:
+        std::filesystem::path m_path;
+    };
+}
 
 TEST(HttpServerConfigLoaderTest, LoadsDefaultConfiguration)
 {
