@@ -1,0 +1,85 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Configure debug",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--preset", "debug"],
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build debug",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "debug"],
+            "dependsOn": "Configure debug",
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Configure release",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--preset", "release"],
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build release",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "release"],
+            "dependsOn": "Configure release",
+            "dependsOrder": "sequence",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean debug",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "debug", "--target", "clean"],
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean release",
+            "type": "process",
+            "command": "cmake",
+            "args": ["--build", "--preset", "release", "--target", "clean"],
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean presets",
+            "dependsOn": ["Clean debug", "Clean release"],
+            "dependsOrder": "parallel",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run tests",
+            "type": "process",
+            "command": "ctest",
+            "args": ["--preset", "debug"],
+            "dependsOn": "Build debug",
+            "dependsOrder": "sequence",
+            "group": "test",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Run clang-tidy",
+            "type": "shell",
+            "command": "clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp",
+            "dependsOn": "Build debug",
+            "dependsOrder": "sequence",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Run clang-format",
+            "type": "shell",
+            "command": "find include src tests -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -exec clang-format -i {} +",
+            "problemMatcher": []
+        }
+    ]
+}
