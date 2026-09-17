@@ -3,13 +3,6 @@
 #include <http/result.hpp>
 #include <http/tcp_socket.hpp>
 
-/// @brief Default port number for the TCP server
-constexpr std::uint16_t DEFAULT_PORT = 8080;
-
-/// @brief Maximum number of pending connections the server can have in its listen queue
-/// @note This value is used when calling the listen_for_connections method on the server socket
-constexpr int MAX_BACKLOG = 5;
-
 /// @brief Configuration structure for the TCP server
 struct TcpServerConfig {
     /// @brief Port number the server will listen on

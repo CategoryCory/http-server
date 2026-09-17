@@ -4,12 +4,15 @@ add_library(
     result.cpp
     unique_file_descriptor.cpp
     tcp_socket.cpp
+    http_server_config_loader.cpp
 )
 
 add_library(
     http_server::lib
     ALIAS http_server_lib
 )
+
+find_package(tomlplusplus CONFIG REQUIRED)
 
 target_include_directories(
     http_server_lib
@@ -21,6 +24,12 @@ target_compile_features(
     http_server_lib
     PUBLIC
     cxx_std_23
+)
+
+target_link_libraries(
+    http_server_lib
+    PUBLIC
+    tomlplusplus::tomlplusplus
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")

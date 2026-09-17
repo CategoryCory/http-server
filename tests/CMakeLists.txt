@@ -13,9 +13,10 @@ function(add_http_server_test target source)
         http_server::lib
     )
 
-    gtest_discover_tests(${target})
+    gtest_discover_tests(${target} WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")
 endfunction()
 
+add_http_server_test(http_server_config_loader_tests http_server_config_loader_test.cpp)
 add_http_server_test(http_server_tests tcp_server_test.cpp)
 add_http_server_test(tcp_socket_tests tcp_socket_test.cpp)
 add_http_server_test(unique_file_descriptor_tests unique_file_descriptor_test.cpp)

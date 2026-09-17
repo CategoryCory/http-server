@@ -240,6 +240,9 @@ Generated\ Files/
 TestResult.xml
 nunit-*.xml
 
+# Local development configuration
+config/http-server.dev.toml
+
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/

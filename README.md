@@ -61,6 +61,39 @@ ctest --preset debug
 The first configuration installs manifest dependencies automatically. Use the
 `release` preset for an optimized build without tests.
 
+### Configuration
+
+The server loads [`config/http-server.toml`](config/http-server.toml) by
+default. It currently supports these settings:
+
+```toml
+[tcp_server]
+port = 8080
+max_backlog = 5
+```
+
+Run the server from the repository root to use the default configuration:
+
+```sh
+./build/debug/src/http_server
+```
+
+For local development, create a private override from the committed default:
+
+```sh
+cp config/http-server.toml config/http-server.dev.toml
+```
+
+Edit `config/http-server.dev.toml` for local settings, then select it
+explicitly when starting the server:
+
+```sh
+./build/debug/src/http_server --config config/http-server.dev.toml
+```
+
+The development configuration is ignored by Git. Any configuration file can
+be selected with `--config <path>`.
+
 When switching an existing build directory to a different compiler or vcpkg
 toolchain, remove that build directory before configuring again:
 
@@ -175,7 +208,7 @@ clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp
 - [ ] Parse HTTP requests
 - [ ] Generate HTTP responses
 - [ ] Add request and response tests
-- [ ] Document configuration and usage
+- [x] Document configuration and usage
 
 ## License
 
