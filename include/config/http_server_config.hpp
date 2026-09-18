@@ -1,6 +1,6 @@
 #pragma once
 
-#include <http/tcp_server.hpp>
+#include <config/tcp_server_config.hpp>
 
 /// @brief Application-wide configuration for the HTTP server.
 struct HttpServerConfig

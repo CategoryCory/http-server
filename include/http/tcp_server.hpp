@@ -2,16 +2,7 @@
 
 #include <http/result.hpp>
 #include <http/tcp_socket.hpp>
-
-/// @brief Configuration structure for the TCP server
-struct TcpServerConfig
-{
-    /// @brief Port number the server will listen on
-    std::uint16_t port{};
-
-    /// @brief Maximum number of pending connections the server can have in its listen queue
-    int max_backlog{};
-};
+#include <config/tcp_server_config.hpp>
 
 /// @brief A TCP server that listens for incoming client connections
 ///

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <config/http_server_config.hpp>
-
 #include <http/result.hpp>
 
 #include <filesystem>
