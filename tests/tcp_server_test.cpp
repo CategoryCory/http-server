@@ -7,10 +7,9 @@ TEST(TcpServerTest, StartWithEphemeralPortSucceeds)
     TcpServer server;
     const TcpServerConfig config{.port = 0, .max_backlog = 1};
 
-    const Result result = server.start(config);
+    const auto result = server.start(config);
 
-    EXPECT_TRUE(result.is_success());
-    EXPECT_TRUE(result.error_message().empty());
+    EXPECT_TRUE(result);
 }
 
 TEST(TcpServerTest, StartReturnsFailureWhenCalledTwice)
@@ -18,10 +17,12 @@ TEST(TcpServerTest, StartReturnsFailureWhenCalledTwice)
     TcpServer server;
     const TcpServerConfig config{.port = 0, .max_backlog = 1};
 
-    ASSERT_TRUE(server.start(config).is_success());
+    ASSERT_TRUE(server.start(config));
 
-    const Result result = server.start(config);
+    const auto result = server.start(config);
 
-    EXPECT_FALSE(result.is_success());
-    EXPECT_EQ(result.error_message(), "Socket already initialized");
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().code, ServerErrorCode::socket_failure);
+    EXPECT_EQ(result.error().socket_error.code, SocketErrorCode::invalid_state);
+    EXPECT_EQ(result.error().socket_error.diagnostic, "Socket already initialized");
 }

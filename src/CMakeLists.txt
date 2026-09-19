@@ -1,7 +1,6 @@
 add_library(
     http_server_lib
     tcp_server.cpp
-    result.cpp
     unique_file_descriptor.cpp
     tcp_socket.cpp
     http_server_config_loader.cpp

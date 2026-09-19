@@ -1,8 +1,9 @@
 #pragma once
 
+#include <config/config_error.hpp>
 #include <config/http_server_config.hpp>
-#include <http/result.hpp>
 
+#include <expected>
 #include <filesystem>
 #include <string_view>
 
@@ -14,15 +15,15 @@ class HttpServerConfigLoader
     static constexpr std::string_view DEFAULT_CONFIG_PATH = "config/http-server.toml";
 
     /// @brief Loads and validates the default TOML configuration file.
-    /// @return A successful result when parsing and validation succeed;
-    ///         otherwise a failure result containing the error.
-    [[nodiscard]] Result load();
+    /// @return An engaged std::expected when parsing and validation succeed;
+    ///         otherwise an unexpected ConfigError.
+    [[nodiscard]] std::expected<void, ConfigError> load();
 
     /// @brief Loads and validates a TOML configuration file.
     /// @param config_path Path to the TOML configuration file.
-    /// @return A successful result when parsing and validation succeed;
-    ///         otherwise a failure result containing the error.
-    [[nodiscard]] Result load(const std::filesystem::path &config_path);
+    /// @return An engaged std::expected when parsing and validation succeed;
+    ///         otherwise an unexpected ConfigError.
+    [[nodiscard]] std::expected<void, ConfigError> load(const std::filesystem::path &config_path);
 
     /// @brief Checks whether configuration was successfully loaded.
     [[nodiscard]] bool is_loaded() const { return m_is_loaded; }

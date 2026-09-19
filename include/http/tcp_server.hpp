@@ -1,8 +1,10 @@
 #pragma once
 
-#include <http/result.hpp>
-#include <http/tcp_socket.hpp>
 #include <config/tcp_server_config.hpp>
+#include <http/server_error.hpp>
+#include <http/tcp_socket.hpp>
+
+#include <expected>
 
 /// @brief A TCP server that listens for incoming client connections
 ///
@@ -18,9 +20,11 @@ class TcpServer
 
     /// @brief Starts the TCP server and begins listening for incoming connections
     /// @param server_config Configuration for the TCP server
-    Result start(const TcpServerConfig &server_config);
+    /// @return An engaged std::expected on success; otherwise an unexpected ServerError.
+    [[nodiscard]] std::expected<void, ServerError> start(const TcpServerConfig &server_config);
 
-    /// @brief Stops the TCP server
+    /// @brief Stops the TCP server.
+    /// @throws std::runtime_error because this operation is not yet implemented.
     void stop();
 
   private:

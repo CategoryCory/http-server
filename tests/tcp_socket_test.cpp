@@ -20,7 +20,7 @@ TEST(TcpSocketTest, InitializationCreatesSocket)
 {
     TcpSocket socket;
 
-    socket.initialize_socket();
+    ASSERT_TRUE(socket.initialize_socket());
 
     EXPECT_TRUE(socket.is_valid());
     EXPECT_GE(socket.get(), 0);
@@ -29,7 +29,7 @@ TEST(TcpSocketTest, InitializationCreatesSocket)
 TEST(TcpSocketTest, InitializationEnablesAddressReuse)
 {
     TcpSocket socket;
-    socket.initialize_socket();
+    ASSERT_TRUE(socket.initialize_socket());
 
     int option{};
     socklen_t option_length = sizeof(option);
@@ -40,25 +40,34 @@ TEST(TcpSocketTest, InitializationEnablesAddressReuse)
 TEST(TcpSocketTest, InitializationCannotBeRepeated)
 {
     TcpSocket socket;
-    socket.initialize_socket();
+    ASSERT_TRUE(socket.initialize_socket());
 
-    EXPECT_THROW(socket.initialize_socket(), std::logic_error);
+    const auto result = socket.initialize_socket();
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().code, SocketErrorCode::invalid_state);
 }
 
 TEST(TcpSocketTest, BindingRequiresInitializedSocket)
 {
     TcpSocket socket;
 
-    EXPECT_THROW(socket.bind_address(0), std::logic_error);
+    const auto result = socket.bind_address(0);
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().code, SocketErrorCode::invalid_state);
 }
 
 TEST(TcpSocketTest, BindingCannotBeRepeated)
 {
     TcpSocket socket;
-    socket.initialize_socket();
-    socket.bind_address(0);
+    ASSERT_TRUE(socket.initialize_socket());
+    ASSERT_TRUE(socket.bind_address(0));
 
-    EXPECT_THROW(socket.bind_address(0), std::logic_error);
+    const auto result = socket.bind_address(0);
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().code, SocketErrorCode::invalid_state);
 }
 
 class TcpSocketInvalidPortTest : public testing::TestWithParam<int>
@@ -69,7 +78,10 @@ TEST_P(TcpSocketInvalidPortTest, BindingRejectsPortOutsideValidRange)
 {
     TcpSocket socket;
 
-    EXPECT_THROW(socket.bind_address(GetParam()), std::invalid_argument);
+    const auto result = socket.bind_address(GetParam());
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().code, SocketErrorCode::invalid_port);
 }
 
 INSTANTIATE_TEST_SUITE_P(OutOfRange, TcpSocketInvalidPortTest, testing::Values(-1, 65536));
@@ -77,8 +89,8 @@ INSTANTIATE_TEST_SUITE_P(OutOfRange, TcpSocketInvalidPortTest, testing::Values(-
 TEST(TcpSocketTest, BindingToEphemeralPortAssignsPort)
 {
     TcpSocket socket;
-    socket.initialize_socket();
-    socket.bind_address(0);
+    ASSERT_TRUE(socket.initialize_socket());
+    ASSERT_TRUE(socket.bind_address(0));
 
     sockaddr_in address{};
     socklen_t address_length = sizeof(address);
@@ -90,44 +102,57 @@ TEST(TcpSocketTest, BindingToEphemeralPortAssignsPort)
 TEST(TcpSocketTest, ListeningRequiresBoundSocket)
 {
     TcpSocket uninitialized_socket;
-    EXPECT_THROW(uninitialized_socket.listen_for_connections(1), std::logic_error);
+    const auto uninitialized_result = uninitialized_socket.listen_for_connections(1);
+    ASSERT_FALSE(uninitialized_result);
+    EXPECT_EQ(uninitialized_result.error().code, SocketErrorCode::invalid_state);
 
     TcpSocket initialized_socket;
-    initialized_socket.initialize_socket();
-    EXPECT_THROW(initialized_socket.listen_for_connections(1), std::logic_error);
+    ASSERT_TRUE(initialized_socket.initialize_socket());
+    const auto initialized_result = initialized_socket.listen_for_connections(1);
+    ASSERT_FALSE(initialized_result);
+    EXPECT_EQ(initialized_result.error().code, SocketErrorCode::invalid_state);
 }
 
 TEST(TcpSocketTest, ListeningCannotBeRepeated)
 {
     TcpSocket socket;
-    socket.initialize_socket();
-    socket.bind_address(0);
-    socket.listen_for_connections(1);
+    ASSERT_TRUE(socket.initialize_socket());
+    ASSERT_TRUE(socket.bind_address(0));
+    ASSERT_TRUE(socket.listen_for_connections(1));
 
-    EXPECT_THROW(socket.listen_for_connections(1), std::logic_error);
+    const auto result = socket.listen_for_connections(1);
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().code, SocketErrorCode::invalid_state);
 }
 
 TEST(TcpSocketTest, AcceptingRequiresListeningSocket)
 {
     TcpSocket uninitialized_socket;
-    EXPECT_THROW(uninitialized_socket.accept_connection(), std::logic_error);
+    const auto uninitialized_result = uninitialized_socket.accept_connection();
+    ASSERT_FALSE(uninitialized_result);
+    EXPECT_EQ(uninitialized_result.error().code, SocketErrorCode::invalid_state);
 
     TcpSocket initialized_socket;
-    initialized_socket.initialize_socket();
-    EXPECT_THROW(initialized_socket.accept_connection(), std::logic_error);
+    ASSERT_TRUE(initialized_socket.initialize_socket());
+    const auto initialized_result = initialized_socket.accept_connection();
+    ASSERT_FALSE(initialized_result);
+    EXPECT_EQ(initialized_result.error().code, SocketErrorCode::invalid_state);
 
     TcpSocket bound_socket;
-    bound_socket.initialize_socket();
-    bound_socket.bind_address(0);
-    EXPECT_THROW(bound_socket.accept_connection(), std::logic_error);
+    ASSERT_TRUE(bound_socket.initialize_socket());
+    ASSERT_TRUE(bound_socket.bind_address(0));
+    const auto bound_result = bound_socket.accept_connection();
+    ASSERT_FALSE(bound_result);
+    EXPECT_EQ(bound_result.error().code, SocketErrorCode::invalid_state);
 }
 
 TEST(TcpSocketTest, AcceptingConnectionReturnsConnectedSocket)
 {
     TcpSocket listener;
-    listener.initialize_socket();
-    listener.bind_address(0);
-    listener.listen_for_connections(1);
+    ASSERT_TRUE(listener.initialize_socket());
+    ASSERT_TRUE(listener.bind_address(0));
+    ASSERT_TRUE(listener.listen_for_connections(1));
 
     sockaddr_in listener_address{};
     socklen_t listener_address_length = sizeof(listener_address);
@@ -142,9 +167,13 @@ TEST(TcpSocketTest, AcceptingConnectionReturnsConnectedSocket)
         ::connect(client_socket.get(), reinterpret_cast<const sockaddr *>(&listener_address), sizeof(listener_address)),
         0);
 
-    TcpSocket connection = listener.accept_connection();
+    auto connection_result = listener.accept_connection();
+    ASSERT_TRUE(connection_result);
+    TcpSocket connection = std::move(*connection_result);
 
     EXPECT_TRUE(connection.is_valid());
     EXPECT_GE(connection.get(), 0);
-    EXPECT_THROW(connection.accept_connection(), std::logic_error);
+    const auto result = connection.accept_connection();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error().code, SocketErrorCode::invalid_state);
 }

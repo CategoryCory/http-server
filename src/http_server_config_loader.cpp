@@ -3,12 +3,16 @@
 #include <toml++/toml.hpp>
 
 #include <exception>
+#include <expected>
 #include <limits>
 #include <utility>
 
-Result HttpServerConfigLoader::load() { return load(std::filesystem::path{DEFAULT_CONFIG_PATH}); }
+std::expected<void, ConfigError> HttpServerConfigLoader::load()
+{
+    return load(std::filesystem::path{DEFAULT_CONFIG_PATH});
+}
 
-Result HttpServerConfigLoader::load(const std::filesystem::path &config_path)
+std::expected<void, ConfigError> HttpServerConfigLoader::load(const std::filesystem::path &config_path)
 {
     m_config = {};
     m_is_loaded = false;
@@ -16,17 +20,62 @@ Result HttpServerConfigLoader::load(const std::filesystem::path &config_path)
     try
     {
         const toml::table toml_config = toml::parse_file(config_path.string());
-        const auto port = toml_config.at_path("tcp_server.port").value<std::int64_t>();
-        const auto max_backlog = toml_config.at_path("tcp_server.max_backlog").value<std::int64_t>();
+        const auto port_node = toml_config.at_path("tcp_server.port");
+        const auto max_backlog_node = toml_config.at_path("tcp_server.max_backlog");
 
-        if (!port || !std::in_range<std::uint16_t>(*port))
+        if (!port_node)
         {
-            return Result::failure("Configuration value tcp_server.port must be an integer from 0 to 65535");
+            return std::unexpected(ConfigError{.code = ConfigErrorCode::missing_required_value,
+                                               .config_path = config_path,
+                                               .key = "tcp_server.port",
+                                               .diagnostic = "Missing required configuration value tcp_server.port"});
         }
 
-        if (!max_backlog || *max_backlog < 0 || *max_backlog > std::numeric_limits<int>::max())
+        if (!max_backlog_node)
         {
-            return Result::failure("Configuration value tcp_server.max_backlog must be a non-negative integer");
+            return std::unexpected(
+                ConfigError{.code = ConfigErrorCode::missing_required_value,
+                            .config_path = config_path,
+                            .key = "tcp_server.max_backlog",
+                            .diagnostic = "Missing required configuration value tcp_server.max_backlog"});
+        }
+
+        const auto port = port_node.value<std::int64_t>();
+        const auto max_backlog = max_backlog_node.value<std::int64_t>();
+
+        if (!port)
+        {
+            return std::unexpected(ConfigError{.code = ConfigErrorCode::invalid_value,
+                                               .config_path = config_path,
+                                               .key = "tcp_server.port",
+                                               .diagnostic = "Configuration value tcp_server.port must be an integer"});
+        }
+
+        if (!max_backlog)
+        {
+            return std::unexpected(
+                ConfigError{.code = ConfigErrorCode::invalid_value,
+                            .config_path = config_path,
+                            .key = "tcp_server.max_backlog",
+                            .diagnostic = "Configuration value tcp_server.max_backlog must be an integer"});
+        }
+
+        if (!std::in_range<std::uint16_t>(*port))
+        {
+            return std::unexpected(
+                ConfigError{.code = ConfigErrorCode::value_out_of_range,
+                            .config_path = config_path,
+                            .key = "tcp_server.port",
+                            .diagnostic = "Configuration value tcp_server.port must be an integer from 0 to 65535"});
+        }
+
+        if (*max_backlog < 0 || *max_backlog > std::numeric_limits<int>::max())
+        {
+            return std::unexpected(
+                ConfigError{.code = ConfigErrorCode::value_out_of_range,
+                            .config_path = config_path,
+                            .key = "tcp_server.max_backlog",
+                            .diagnostic = "Configuration value tcp_server.max_backlog must be a non-negative integer"});
         }
 
         m_config.tcp_server = {.port = static_cast<std::uint16_t>(*port),
@@ -34,9 +83,12 @@ Result HttpServerConfigLoader::load(const std::filesystem::path &config_path)
     }
     catch (const std::exception &exception)
     {
-        return Result::failure(exception.what());
+        return std::unexpected(ConfigError{.code = ConfigErrorCode::parse_failure,
+                                           .config_path = config_path,
+                                           .key = "",
+                                           .diagnostic = exception.what()});
     }
 
     m_is_loaded = true;
-    return Result::success();
+    return {};
 }

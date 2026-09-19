@@ -21,17 +21,23 @@ int main(int argument_count, char *arguments[])
     }
 
     HttpServerConfigLoader config_loader;
-    const Result config_result = config_loader.load(config_path);
+    const auto config_result = config_loader.load(config_path);
 
-    if (!config_result.is_success())
+    if (!config_result)
     {
-        std::cerr << "Failed to load configuration: " << config_result.error_message() << "\n";
+        std::cerr << "Failed to load configuration: " << config_result.error().diagnostic << "\n";
         return 1;
     }
 
     TcpServer server;
-    const Result result = server.start(config_loader.config().tcp_server);
+    const auto result = server.start(config_loader.config().tcp_server);
 
-    std::cout << "Server start result: " << (result.is_success() ? "success" : "failure") << "\n";
-    return result.is_success() ? 0 : 1;
+    if (!result)
+    {
+        std::cerr << "Failed to start server: " << result.error().socket_error.diagnostic << "\n";
+        return 1;
+    }
+
+    std::cout << "Server start result: success\n";
+    return 0;
 }

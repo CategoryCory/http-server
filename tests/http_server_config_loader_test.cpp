@@ -47,9 +47,9 @@ TEST(HttpServerConfigLoaderTest, LoadsDefaultConfiguration)
 {
     HttpServerConfigLoader config_loader;
 
-    const Result result = config_loader.load();
+    const auto result = config_loader.load();
 
-    ASSERT_TRUE(result.is_success()) << result.error_message();
+    ASSERT_TRUE(result) << result.error().diagnostic;
     EXPECT_TRUE(config_loader.is_loaded());
     EXPECT_EQ(config_loader.config().tcp_server.port, 8080);
     EXPECT_EQ(config_loader.config().tcp_server.max_backlog, 5);
@@ -62,9 +62,9 @@ TEST(HttpServerConfigLoaderTest, LoadsSpecifiedConfiguration)
                                           "max_backlog = 10\n"};
     HttpServerConfigLoader config_loader;
 
-    const Result result = config_loader.load(config_file.path());
+    const auto result = config_loader.load(config_file.path());
 
-    ASSERT_TRUE(result.is_success()) << result.error_message();
+    ASSERT_TRUE(result) << result.error().diagnostic;
     EXPECT_TRUE(config_loader.is_loaded());
     EXPECT_EQ(config_loader.config().tcp_server.port, 9090);
     EXPECT_EQ(config_loader.config().tcp_server.max_backlog, 10);
@@ -76,11 +76,12 @@ TEST(HttpServerConfigLoaderTest, RejectsMissingRequiredValue)
                                           "port = 8080\n"};
     HttpServerConfigLoader config_loader;
 
-    const Result result = config_loader.load(config_file.path());
+    const auto result = config_loader.load(config_file.path());
 
-    EXPECT_FALSE(result.is_success());
+    ASSERT_FALSE(result);
     EXPECT_FALSE(config_loader.is_loaded());
-    EXPECT_EQ(result.error_message(), "Configuration value tcp_server.max_backlog must be a non-negative integer");
+    EXPECT_EQ(result.error().code, ConfigErrorCode::missing_required_value);
+    EXPECT_EQ(result.error().key, "tcp_server.max_backlog");
 }
 
 TEST(HttpServerConfigLoaderTest, RejectsOutOfRangePort)
@@ -90,11 +91,27 @@ TEST(HttpServerConfigLoaderTest, RejectsOutOfRangePort)
                                           "max_backlog = 5\n"};
     HttpServerConfigLoader config_loader;
 
-    const Result result = config_loader.load(config_file.path());
+    const auto result = config_loader.load(config_file.path());
 
-    EXPECT_FALSE(result.is_success());
+    ASSERT_FALSE(result);
     EXPECT_FALSE(config_loader.is_loaded());
-    EXPECT_EQ(result.error_message(), "Configuration value tcp_server.port must be an integer from 0 to 65535");
+    EXPECT_EQ(result.error().code, ConfigErrorCode::value_out_of_range);
+    EXPECT_EQ(result.error().key, "tcp_server.port");
+}
+
+TEST(HttpServerConfigLoaderTest, RejectsValueWithWrongType)
+{
+    const TemporaryConfigFile config_file{"[tcp_server]\n"
+                                          "port = \"8080\"\n"
+                                          "max_backlog = 5\n"};
+    HttpServerConfigLoader config_loader;
+
+    const auto result = config_loader.load(config_file.path());
+
+    ASSERT_FALSE(result);
+    EXPECT_FALSE(config_loader.is_loaded());
+    EXPECT_EQ(result.error().code, ConfigErrorCode::invalid_value);
+    EXPECT_EQ(result.error().key, "tcp_server.port");
 }
 
 TEST(HttpServerConfigLoaderTest, RejectsMissingConfigurationFile)
@@ -105,8 +122,10 @@ TEST(HttpServerConfigLoaderTest, RejectsMissingConfigurationFile)
     std::filesystem::remove(missing_path, error);
     HttpServerConfigLoader config_loader;
 
-    const Result result = config_loader.load(missing_path);
+    const auto result = config_loader.load(missing_path);
 
-    EXPECT_FALSE(result.is_success());
+    ASSERT_FALSE(result);
     EXPECT_FALSE(config_loader.is_loaded());
+    EXPECT_EQ(result.error().code, ConfigErrorCode::parse_failure);
+    EXPECT_EQ(result.error().config_path, missing_path);
 }
