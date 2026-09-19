@@ -35,6 +35,10 @@ PackConstructorInitializers: Never
 # Includes
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^[<"](config|http)/'
+    Priority: 0
+    CaseSensitive: true
 
 # Namespaces
 NamespaceIndentation: None

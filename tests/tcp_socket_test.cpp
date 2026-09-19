@@ -1,7 +1,8 @@
-#include <arpa/inet.h>
-#include <gtest/gtest.h>
 #include <http/tcp_socket.hpp>
 #include <http/unique_file_descriptor.hpp>
+
+#include <arpa/inet.h>
+#include <gtest/gtest.h>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>

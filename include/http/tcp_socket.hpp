@@ -1,8 +1,9 @@
 #pragma once
 
-#include <expected>
 #include <http/socket_error.hpp>
 #include <http/unique_file_descriptor.hpp>
+
+#include <expected>
 #include <netinet/in.h>
 
 /// @brief Describes the outcome of a future connection operation.

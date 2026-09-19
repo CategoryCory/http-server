@@ -1,4 +1,5 @@
 #include <http/tcp_server.hpp>
+
 #include <stdexcept>
 
 std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_config)

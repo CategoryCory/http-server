@@ -1,5 +1,6 @@
-#include <cerrno>
 #include <http/tcp_socket.hpp>
+
+#include <cerrno>
 #include <sys/socket.h>
 #include <utility>
 

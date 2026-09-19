@@ -1,7 +1,8 @@
+#include <http/unique_file_descriptor.hpp>
+
 #include <cerrno>
 #include <fcntl.h>
 #include <gtest/gtest.h>
-#include <http/unique_file_descriptor.hpp>
 #include <stdexcept>
 #include <system_error>
 #include <unistd.h>

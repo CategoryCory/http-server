@@ -1,9 +1,10 @@
 #pragma once
 
 #include <config/tcp_server_config.hpp>
-#include <expected>
 #include <http/server_error.hpp>
 #include <http/tcp_socket.hpp>
+
+#include <expected>
 
 /// @brief A TCP server that listens for incoming client connections
 ///
