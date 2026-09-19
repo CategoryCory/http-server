@@ -1,9 +1,7 @@
 #include <config/http_server_config_loader.hpp>
-
-#include <gtest/gtest.h>
-
 #include <filesystem>
 #include <fstream>
+#include <gtest/gtest.h>
 #include <stdexcept>
 #include <string_view>
 
@@ -11,7 +9,7 @@ namespace
 {
 class TemporaryConfigFile
 {
-  public:
+public:
     explicit TemporaryConfigFile(std::string_view contents)
         : m_path(std::filesystem::temp_directory_path() / "http-server-config-loader-test.toml")
     {
@@ -38,7 +36,7 @@ class TemporaryConfigFile
 
     [[nodiscard]] const std::filesystem::path &path() const { return m_path; }
 
-  private:
+private:
     std::filesystem::path m_path;
 };
 } // namespace

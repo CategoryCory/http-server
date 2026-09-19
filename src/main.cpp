@@ -1,8 +1,6 @@
 #include <config/http_server_config_loader.hpp>
-
-#include <http/tcp_server.hpp>
-
 #include <filesystem>
+#include <http/tcp_server.hpp>
 #include <iostream>
 #include <string_view>
 

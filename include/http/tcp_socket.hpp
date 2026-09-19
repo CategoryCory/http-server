@@ -1,42 +1,40 @@
 #pragma once
 
+#include <expected>
 #include <http/socket_error.hpp>
 #include <http/unique_file_descriptor.hpp>
-
-#include <cstdint>
-#include <expected>
 #include <netinet/in.h>
 
 /// @brief Describes the outcome of a future connection operation.
 /// @note This type is not used by the current API.
 enum class ConnectionResult : std::uint8_t
 {
-  /// @brief The operation completed successfully.
+    /// @brief The operation completed successfully.
     Success,
 
-  /// @brief The operation timed out.
+    /// @brief The operation timed out.
     Timeout,
 
-  /// @brief The operation failed.
+    /// @brief The operation failed.
     Error
 };
 
 /// @brief Describes the lifecycle state of a TCP socket.
 enum class TcpSocketState : std::uint8_t
 {
-  /// @brief No socket descriptor is owned.
+    /// @brief No socket descriptor is owned.
     Uninitialized,
 
-  /// @brief A socket descriptor has been created and configured.
+    /// @brief A socket descriptor has been created and configured.
     Initialized,
 
-  /// @brief The socket is bound to a local address.
+    /// @brief The socket is bound to a local address.
     Bound,
 
-  /// @brief The socket is accepting incoming connections.
+    /// @brief The socket is accepting incoming connections.
     Listening,
 
-  /// @brief The socket represents an accepted client connection.
+    /// @brief The socket represents an accepted client connection.
     Connected
 };
 
@@ -46,7 +44,7 @@ enum class TcpSocketState : std::uint8_t
 /// reuse before binding them to a local port.
 class TcpSocket
 {
-  public:
+public:
     /// @brief Default constructor. Creates an uninitialized TcpSocket instance.
     TcpSocket() = default;
 
@@ -79,7 +77,7 @@ class TcpSocket
     /// @return The socket descriptor, or -1 if no socket is owned.
     [[nodiscard]] int get() const noexcept;
 
-  private:
+private:
     TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state);
     UniqueFileDescriptor m_socket_fd{};
     sockaddr_in m_addr{};

@@ -30,7 +30,7 @@ struct ConfigError
 
     /// @brief The path to the configuration file associated with the error.
     std::filesystem::path config_path;
-    
+
     /// @brief The specific configuration key associated with the error.
     ///        Empty for whole-file parse failures.
     std::string key;

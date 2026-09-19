@@ -2,7 +2,6 @@
 
 #include <config/config_error.hpp>
 #include <config/http_server_config.hpp>
-
 #include <expected>
 #include <filesystem>
 #include <string_view>
@@ -10,7 +9,7 @@
 /// @brief Loads HTTP server configuration from a TOML file.
 class HttpServerConfigLoader
 {
-  public:
+public:
     /// @brief Path to the default application configuration file.
     static constexpr std::string_view DEFAULT_CONFIG_PATH = "config/http-server.toml";
 
@@ -31,7 +30,7 @@ class HttpServerConfigLoader
     /// @brief Gets the loaded application configuration.
     [[nodiscard]] const HttpServerConfig &config() const { return m_config; }
 
-  private:
+private:
     HttpServerConfig m_config{};
     bool m_is_loaded{false};
 };

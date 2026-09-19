@@ -1,5 +1,4 @@
 #include <http/tcp_server.hpp>
-
 #include <stdexcept>
 
 std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_config)
@@ -22,4 +21,7 @@ std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_
     return {};
 }
 
-void TcpServer::stop() { throw std::runtime_error("TcpServer::stop() not yet implemented"); }
+void TcpServer::stop()
+{
+    throw std::runtime_error("TcpServer::stop() not yet implemented");
+}

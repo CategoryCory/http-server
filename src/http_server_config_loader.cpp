@@ -1,10 +1,8 @@
 #include <config/http_server_config_loader.hpp>
-
-#include <toml++/toml.hpp>
-
 #include <exception>
 #include <expected>
 #include <limits>
+#include <toml++/toml.hpp>
 #include <utility>
 
 std::expected<void, ConfigError> HttpServerConfigLoader::load()

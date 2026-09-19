@@ -1,5 +1,41 @@
 BasedOnStyle: LLVM
+
+# General layout
 IndentWidth: 4
+ContinuationIndentWidth: 4
 ColumnLimit: 120
+UseTab: Never
+
+# Braces
 BreakBeforeBraces: Allman
+
+# Classes
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+
+# Pointers / references
+DerivePointerAlignment: false
 PointerAlignment: Right
+ReferenceAlignment: Pointer
+
+# Short constructs
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortBlocksOnASingleLine: Never
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+
+# Function calls / declarations
+BinPackArguments: false
+BinPackParameters: false
+
+# Constructors
+PackConstructorInitializers: Never
+
+# Includes
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+
+# Namespaces
+NamespaceIndentation: None
+FixNamespaceComments: true

@@ -1,6 +1,5 @@
-#include <http/tcp_server.hpp>
-
 #include <gtest/gtest.h>
+#include <http/tcp_server.hpp>
 
 TEST(TcpServerTest, StartWithEphemeralPortSucceeds)
 {

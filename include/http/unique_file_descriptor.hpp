@@ -6,7 +6,7 @@
 /// replaced. Instances cannot be copied but may be moved to transfer ownership.
 class UniqueFileDescriptor
 {
-  public:
+public:
     /// @brief Creates an empty descriptor owner.
     UniqueFileDescriptor() = default;
 
@@ -57,7 +57,7 @@ class UniqueFileDescriptor
     /// @return The owned descriptor, or -1 if this object is empty.
     [[nodiscard]] int get() const noexcept;
 
-  private:
+private:
     static constexpr int INVALID_FD = -1;
     int m_unique_fd = INVALID_FD;
 };

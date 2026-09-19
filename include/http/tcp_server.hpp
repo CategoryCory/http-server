@@ -1,10 +1,9 @@
 #pragma once
 
 #include <config/tcp_server_config.hpp>
+#include <expected>
 #include <http/server_error.hpp>
 #include <http/tcp_socket.hpp>
-
-#include <expected>
 
 /// @brief A TCP server that listens for incoming client connections
 ///
@@ -14,7 +13,7 @@
 /// such as HTTP servers.
 class TcpServer
 {
-  public:
+public:
     /// @brief Default constructor for the TCP server
     TcpServer() = default;
 
@@ -27,7 +26,7 @@ class TcpServer
     /// @throws std::runtime_error because this operation is not yet implemented.
     void stop();
 
-  private:
+private:
     /// @brief TCP socket for the server
     TcpSocket m_socket{};
 };

@@ -1,11 +1,11 @@
-#include <http/tcp_socket.hpp>
-
 #include <cerrno>
+#include <http/tcp_socket.hpp>
 #include <sys/socket.h>
 #include <utility>
 
 TcpSocket::TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state)
-    : m_socket_fd(std::move(socket_fd)), m_state(state)
+    : m_socket_fd(std::move(socket_fd)),
+      m_state(state)
 {
 }
 
@@ -13,8 +13,8 @@ std::expected<void, SocketError> TcpSocket::initialize_socket()
 {
     if (m_state != TcpSocketState::Uninitialized)
     {
-        return std::unexpected(SocketError{.code = SocketErrorCode::invalid_state,
-                                           .diagnostic = "Socket already initialized"});
+        return std::unexpected(
+            SocketError{.code = SocketErrorCode::invalid_state, .diagnostic = "Socket already initialized"});
     }
 
     const auto socket_fd = ::socket(AF_INET, SOCK_STREAM, 0);
@@ -114,9 +114,15 @@ std::expected<TcpSocket, SocketError> TcpSocket::accept_connection() const
     return TcpSocket(UniqueFileDescriptor{client_fd}, TcpSocketState::Connected);
 }
 
-bool TcpSocket::is_valid() const noexcept { return m_socket_fd.is_valid(); }
+bool TcpSocket::is_valid() const noexcept
+{
+    return m_socket_fd.is_valid();
+}
 
-int TcpSocket::get() const noexcept { return m_socket_fd.get(); }
+int TcpSocket::get() const noexcept
+{
+    return m_socket_fd.get();
+}
 
 std::expected<void, SocketError> TcpSocket::require_socket_state(TcpSocketState required_state) const
 {
