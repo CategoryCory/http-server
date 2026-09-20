@@ -7,7 +7,7 @@
 #include <expected>
 
 /// @brief Represents the state of the TCP server.
-enum class TcpServerState
+enum class TcpServerState : std::uint8_t
 {
     /// @brief The server is stopped and not currently running.
     Stopped,
@@ -36,7 +36,7 @@ public:
     /// @brief Accepts an incoming client connection.
     /// @return An engaged std::expected containing the accepted TcpSocket on success; otherwise an unexpected
     /// ServerError.
-    [[nodiscard]] std::expected<TcpSocket, ServerError> accept_connection();
+    [[nodiscard]] std::expected<TcpSocket, ServerError> accept_connection() const;
 
     /// @brief Checks if the TCP server is currently running.
     /// @return true if the server is running; otherwise false.
