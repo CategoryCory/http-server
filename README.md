@@ -4,7 +4,13 @@ A work-in-progress C++ portfolio project to build a simple, lightweight, and pro
 
 ## Status
 
-The project currently establishes the TCP server foundation. HTTP request handling and response generation are planned.
+The project currently provides a tested TCP server foundation: configuration
+loading, socket lifecycle management, listener startup, and client connection
+acceptance. HTTP request handling and response generation are planned.
+
+The command-line program currently validates its configuration and starts the
+listener before exiting. A long-running connection-processing loop is planned
+as part of the HTTP server work.
 
 ## Goals
 
@@ -204,7 +210,7 @@ clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp
 ## Roadmap
 
 - [x] TCP socket lifecycle management
-- [ ] Accept client connections
+- [x] Accept client connections
 - [ ] Parse HTTP requests
 - [ ] Generate HTTP responses
 - [ ] Add request and response tests
