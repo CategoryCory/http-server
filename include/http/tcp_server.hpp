@@ -11,7 +11,7 @@ enum class TcpServerState
 {
     /// @brief The server is stopped and not currently running.
     Stopped,
-    
+
     /// @brief The server is currently running and accepting connections.
     Running
 };
@@ -32,6 +32,15 @@ public:
     /// @param server_config Configuration for the TCP server
     /// @return An engaged std::expected on success; otherwise an unexpected ServerError.
     [[nodiscard]] std::expected<void, ServerError> start(const TcpServerConfig &server_config);
+
+    /// @brief Accepts an incoming client connection.
+    /// @return An engaged std::expected containing the accepted TcpSocket on success; otherwise an unexpected
+    /// ServerError.
+    [[nodiscard]] std::expected<TcpSocket, ServerError> accept_connection();
+
+    /// @brief Checks if the TCP server is currently running.
+    /// @return true if the server is running; otherwise false.
+    [[nodiscard]] bool is_running() const noexcept { return m_state == TcpServerState::Running; }
 
     /// @brief Stops the TCP server.
     /// @throws std::runtime_error because this operation is not yet implemented.

@@ -33,6 +33,22 @@ std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_
     return {};
 }
 
+std::expected<TcpSocket, ServerError> TcpServer::accept_connection()
+{
+    if (m_state != TcpServerState::Running)
+    {
+        return std::unexpected(ServerError{.code = ServerErrorCode::not_running});
+    }
+
+    auto result = m_socket.accept_connection();
+    if (!result)
+    {
+        return std::unexpected(ServerError{.code = ServerErrorCode::socket_failure, .socket_error = result.error()});
+    }
+
+    return std::move(result.value());
+}
+
 void TcpServer::stop()
 {
     throw std::runtime_error("TcpServer::stop() not yet implemented");
