@@ -28,6 +28,8 @@ int main(int argument_count, char *arguments[])
         return 1;
     }
 
+    std::cout << "Server config loaded successfully\n";
+
     TcpServer server;
     const auto result = server.start(config_loader.config().tcp_server);
 
@@ -37,6 +39,20 @@ int main(int argument_count, char *arguments[])
         return 1;
     }
 
-    std::cout << "Server start result: success\n";
+    std::cout << "Server started successfully\n";
+
+    const auto accept_result = server.accept_connection();
+
+    if (!accept_result)
+    {
+        std::cerr << "Failed to accept connection: " << accept_result.error().socket_error.diagnostic << "\n";
+        return 1;
+    }
+
+    std::cout << "Accepted connection successfully\n";
+
+    server.stop();
+
+    std::cout << "Server stopped successfully\n";
     return 0;
 }
