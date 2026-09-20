@@ -128,3 +128,25 @@ TEST(HttpServerConfigLoaderTest, RejectsMissingConfigurationFile)
     EXPECT_EQ(result.error().code, ConfigErrorCode::parse_failure);
     EXPECT_EQ(result.error().config_path, missing_path);
 }
+
+TEST(HttpServerConfigLoaderTest, FailedReloadClearsPreviousConfiguration)
+{
+    HttpServerConfigLoader config_loader;
+
+    {
+        const TemporaryConfigFile valid_config{"[tcp_server]\n"
+                                               "port = 9090\n"
+                                               "max_backlog = 10\n"};
+        ASSERT_TRUE(config_loader.load(valid_config.path()));
+    }
+
+    const TemporaryConfigFile invalid_config{"[tcp_server]\n"
+                                             "port = 9090\n"};
+
+    const auto result = config_loader.load(invalid_config.path());
+
+    ASSERT_FALSE(result);
+    EXPECT_FALSE(config_loader.is_loaded());
+    EXPECT_EQ(config_loader.config().tcp_server.port, 0);
+    EXPECT_EQ(config_loader.config().tcp_server.max_backlog, 0);
+}
