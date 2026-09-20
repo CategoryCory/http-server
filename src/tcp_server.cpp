@@ -49,7 +49,11 @@ std::expected<TcpSocket, ServerError> TcpServer::accept_connection()
     return std::move(result.value());
 }
 
-void TcpServer::stop()
+void TcpServer::stop() noexcept
 {
-    throw std::runtime_error("TcpServer::stop() not yet implemented");
+    if (m_state == TcpServerState::Running)
+    {
+        m_socket.close();
+        m_state = TcpServerState::Stopped;
+    }
 }

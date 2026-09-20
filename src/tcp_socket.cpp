@@ -115,14 +115,15 @@ std::expected<TcpSocket, SocketError> TcpSocket::accept_connection() const
     return TcpSocket(UniqueFileDescriptor{client_fd}, TcpSocketState::Connected);
 }
 
-bool TcpSocket::is_valid() const noexcept
+void TcpSocket::close() noexcept
 {
-    return m_socket_fd.is_valid();
-}
-
-int TcpSocket::get() const noexcept
-{
-    return m_socket_fd.get();
+    if (m_socket_fd.is_valid())
+    {
+        m_socket_fd.reset();
+    }
+    
+    m_addr = sockaddr_in{};
+    m_state = TcpSocketState::Uninitialized;
 }
 
 std::expected<void, SocketError> TcpSocket::require_socket_state(TcpSocketState required_state) const

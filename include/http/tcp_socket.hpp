@@ -70,13 +70,16 @@ public:
     ///         otherwise an unexpected SocketError.
     [[nodiscard]] std::expected<TcpSocket, SocketError> accept_connection() const;
 
+    /// @brief Closes the owned socket if it is open.
+    void close() noexcept;
+
     /// @brief Checks whether this instance owns an initialized socket.
     /// @return true when an initialized socket is owned; otherwise false.
-    [[nodiscard]] bool is_valid() const noexcept;
+    [[nodiscard]] bool is_valid() const noexcept { return m_socket_fd.is_valid(); }
 
     /// @brief Returns the owned socket descriptor without transferring ownership.
     /// @return The socket descriptor, or -1 if no socket is owned.
-    [[nodiscard]] int get() const noexcept;
+    [[nodiscard]] int get() const noexcept { return m_socket_fd.get(); }
 
 private:
     TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state);

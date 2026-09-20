@@ -43,8 +43,7 @@ public:
     [[nodiscard]] bool is_running() const noexcept { return m_state == TcpServerState::Running; }
 
     /// @brief Stops the TCP server.
-    /// @throws std::runtime_error because this operation is not yet implemented.
-    void stop();
+    void stop() noexcept;
 
 private:
     /// @brief TCP socket for the server
