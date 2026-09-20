@@ -6,6 +6,16 @@
 
 #include <expected>
 
+/// @brief Represents the state of the TCP server.
+enum class TcpServerState
+{
+    /// @brief The server is stopped and not currently running.
+    Stopped,
+    
+    /// @brief The server is currently running and accepting connections.
+    Running
+};
+
 /// @brief A TCP server that listens for incoming client connections
 ///
 /// This class manages a TCP socket bound to a local address and port,
@@ -30,4 +40,5 @@ public:
 private:
     /// @brief TCP socket for the server
     TcpSocket m_socket{};
+    TcpServerState m_state{TcpServerState::Stopped};
 };

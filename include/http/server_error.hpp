@@ -7,6 +7,9 @@ enum class ServerErrorCode
 {
     /// @brief Indicates a failure related to the underlying socket.
     socket_failure,
+    
+    /// @brief Indicates that the server is already running.
+    already_running,
 };
 
 /// @brief Represents an error encountered by the HTTP server.

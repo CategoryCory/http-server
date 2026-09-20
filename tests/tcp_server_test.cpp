@@ -22,7 +22,5 @@ TEST(TcpServerTest, StartReturnsFailureWhenCalledTwice)
     const auto result = server.start(config);
 
     ASSERT_FALSE(result);
-    EXPECT_EQ(result.error().code, ServerErrorCode::socket_failure);
-    EXPECT_EQ(result.error().socket_error.code, SocketErrorCode::invalid_state);
-    EXPECT_EQ(result.error().socket_error.diagnostic, "Socket already initialized");
+    EXPECT_EQ(result.error().code, ServerErrorCode::already_running);
 }
