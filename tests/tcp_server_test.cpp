@@ -47,8 +47,8 @@ TEST(TcpServerTest, AcceptingConnectionReturnsConnectedSocket)
     sockaddr_in listener_address{};
     listener_address.sin_family = AF_INET;
     listener_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    ASSERT_EQ(::bind(reservation.get(), reinterpret_cast<const sockaddr *>(&listener_address), sizeof(listener_address)),
-              0);
+    ASSERT_EQ(
+        ::bind(reservation.get(), reinterpret_cast<const sockaddr *>(&listener_address), sizeof(listener_address)), 0);
 
     socklen_t listener_address_length = sizeof(listener_address);
     ASSERT_EQ(getsockname(reservation.get(), reinterpret_cast<sockaddr *>(&listener_address), &listener_address_length),
@@ -61,7 +61,8 @@ TEST(TcpServerTest, AcceptingConnectionReturnsConnectedSocket)
     UniqueFileDescriptor client_socket(::socket(AF_INET, SOCK_STREAM, 0));
     ASSERT_TRUE(client_socket.is_valid());
     ASSERT_EQ(
-        ::connect(client_socket.get(), reinterpret_cast<const sockaddr *>(&listener_address), sizeof(listener_address)), 0);
+        ::connect(client_socket.get(), reinterpret_cast<const sockaddr *>(&listener_address), sizeof(listener_address)),
+        0);
 
     const auto result = server.accept_connection();
 

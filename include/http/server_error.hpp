@@ -10,7 +10,7 @@ enum class ServerErrorCode
 
     /// @brief Indicates that the server is not currently running.
     not_running,
-    
+
     /// @brief Indicates that the server is already running.
     already_running,
 };

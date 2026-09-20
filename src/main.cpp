@@ -7,11 +7,11 @@
 
 namespace fs = std::filesystem;
 
-void test_start_twice();
+static void test_start_twice();
 
-void test_accept_before_start();
+static void test_accept_before_start();
 
-int test_full_lifecycle(fs::path config_path);
+static int test_full_lifecycle(const fs::path &config_path);
 
 int main(int argument_count, char *arguments[])
 {
@@ -36,19 +36,18 @@ int main(int argument_count, char *arguments[])
 void test_start_twice()
 {
     TcpServer server;
-    const auto first_start_result = server.start({});
 
-    if (!first_start_result)
+    if (const auto first_start_result = server.start({}); !first_start_result)
     {
-        std::cerr << "Failed to start server the first time: " << first_start_result.error().socket_error.diagnostic << "\n";
+        std::cerr << "Failed to start server the first time: " << first_start_result.error().socket_error.diagnostic
+                  << "\n";
         return;
     }
 
-    const auto second_start_result = server.start({});
-
-    if (!second_start_result)
+    if (const auto second_start_result = server.start({}); !second_start_result)
     {
-        std::cerr << "Failed to start server the second time: " << second_start_result.error().socket_error.diagnostic << "\n";
+        std::cerr << "Failed to start server the second time: " << second_start_result.error().socket_error.diagnostic
+                  << "\n";
     }
 
     server.stop();
@@ -57,20 +56,19 @@ void test_start_twice()
 void test_accept_before_start()
 {
     TcpServer server;
-    const auto accept_result = server.accept_connection();
 
-    if (!accept_result)
+    if (const auto accept_result = server.accept_connection(); !accept_result)
     {
-        std::cerr << "Failed to accept connection before starting server: " << accept_result.error().socket_error.diagnostic << "\n";
+        std::cerr << "Failed to accept connection before starting server: "
+                  << accept_result.error().socket_error.diagnostic << "\n";
     }
 }
 
-int test_full_lifecycle(fs::path config_path)
+int test_full_lifecycle(const fs::path &config_path)
 {
     HttpServerConfigLoader config_loader;
-    const auto config_result = config_loader.load(config_path);
 
-    if (!config_result)
+    if (const auto config_result = config_loader.load(config_path); !config_result)
     {
         std::cerr << "Failed to load configuration: " << config_result.error().diagnostic << "\n";
         return 1;
@@ -79,9 +77,8 @@ int test_full_lifecycle(fs::path config_path)
     std::cout << "Server config loaded successfully\n";
 
     TcpServer server;
-    const auto result = server.start(config_loader.config().tcp_server);
 
-    if (!result)
+    if (const auto result = server.start(config_loader.config().tcp_server); !result)
     {
         std::cerr << "Failed to start server: " << result.error().socket_error.diagnostic << "\n";
         return 1;
@@ -89,9 +86,7 @@ int test_full_lifecycle(fs::path config_path)
 
     std::cout << "Server started successfully\n";
 
-    const auto accept_result = server.accept_connection();
-
-    if (!accept_result)
+    if (const auto accept_result = server.accept_connection(); !accept_result)
     {
         std::cerr << "Failed to accept connection: " << accept_result.error().socket_error.diagnostic << "\n";
         return 1;

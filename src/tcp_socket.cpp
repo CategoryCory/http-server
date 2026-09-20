@@ -121,7 +121,7 @@ void TcpSocket::close() noexcept
     {
         m_socket_fd.reset();
     }
-    
+
     m_addr = sockaddr_in{};
     m_state = TcpSocketState::Uninitialized;
 }
