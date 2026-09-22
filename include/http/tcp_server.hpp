@@ -4,6 +4,7 @@
 #include <http/server_error.hpp>
 #include <http/tcp_socket.hpp>
 
+#include <cstdint>
 #include <expected>
 
 /// @brief Represents the state of the TCP server.

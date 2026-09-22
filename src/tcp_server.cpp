@@ -1,43 +1,36 @@
 #include <http/tcp_server.hpp>
-#include <http/tcp_socket.hpp>
 
-#include <stdexcept>
+#include <expected>
+#include <optional>
 #include <utility>
 
 std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_config)
 {
     if (m_state == TcpServerState::Running)
     {
-        return std::unexpected(ServerError{.code = ServerErrorCode::already_running});
+        return std::unexpected(
+            ServerError{.code = ServerErrorCode::already_running, .socket_error = std::nullopt});
     }
 
     TcpSocket temp_socket{};
 
-    if (const auto result = temp_socket.initialize_socket(); !result)
-    {
-        return std::unexpected(ServerError{.code = ServerErrorCode::socket_failure, .socket_error = result.error()});
-    }
-
-    if (const auto result = temp_socket.bind_address(server_config.port); !result)
-    {
-        return std::unexpected(ServerError{.code = ServerErrorCode::socket_failure, .socket_error = result.error()});
-    }
-
-    if (const auto result = temp_socket.listen_for_connections(server_config.max_backlog); !result)
-    {
-        return std::unexpected(ServerError{.code = ServerErrorCode::socket_failure, .socket_error = result.error()});
-    }
-
-    m_socket = std::move(temp_socket);
-    m_state = TcpServerState::Running;
-    return {};
+    return temp_socket.initialize_socket()
+        .and_then([&] { return temp_socket.bind_address(server_config.port); })
+        .and_then([&] { return temp_socket.listen_for_connections(server_config.max_backlog); })
+        .transform([&] {
+            m_socket = std::move(temp_socket);
+            m_state = TcpServerState::Running;
+        })
+        .transform_error([](SocketError error) {
+            return ServerError{.code = ServerErrorCode::socket_failure, .socket_error = std::move(error)};
+        });
 }
 
 std::expected<TcpSocket, ServerError> TcpServer::accept_connection() const
 {
     if (m_state != TcpServerState::Running)
     {
-        return std::unexpected(ServerError{.code = ServerErrorCode::not_running});
+        return std::unexpected(ServerError{.code = ServerErrorCode::not_running, .socket_error = std::nullopt});
     }
 
     auto result = m_socket.accept_connection();

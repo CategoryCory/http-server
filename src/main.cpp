@@ -1,4 +1,5 @@
 #include <config/http_server_config_loader.hpp>
+#include <http/server_error.hpp>
 #include <http/tcp_server.hpp>
 
 #include <filesystem>
@@ -12,6 +13,26 @@ static void test_start_twice();
 static void test_accept_before_start();
 
 static int test_full_lifecycle(const fs::path &config_path);
+
+static std::string_view diagnostic(const ServerError &error)
+{
+    if (error.socket_error)
+    {
+        return error.socket_error->diagnostic;
+    }
+
+    switch (error.code)
+    {
+    case ServerErrorCode::socket_failure:
+        return "Socket operation failed";
+    case ServerErrorCode::not_running:
+        return "Server is not running";
+    case ServerErrorCode::already_running:
+        return "Server is already running";
+    }
+
+    return "Unknown server error";
+}
 
 int main(int argument_count, char *arguments[])
 {
@@ -39,15 +60,13 @@ void test_start_twice()
 
     if (const auto first_start_result = server.start({}); !first_start_result)
     {
-        std::cerr << "Failed to start server the first time: " << first_start_result.error().socket_error.diagnostic
-                  << "\n";
+        std::cerr << "Failed to start server the first time: " << diagnostic(first_start_result.error()) << "\n";
         return;
     }
 
     if (const auto second_start_result = server.start({}); !second_start_result)
     {
-        std::cerr << "Failed to start server the second time: " << second_start_result.error().socket_error.diagnostic
-                  << "\n";
+        std::cerr << "Failed to start server the second time: " << diagnostic(second_start_result.error()) << "\n";
     }
 
     server.stop();
@@ -59,8 +78,7 @@ void test_accept_before_start()
 
     if (const auto accept_result = server.accept_connection(); !accept_result)
     {
-        std::cerr << "Failed to accept connection before starting server: "
-                  << accept_result.error().socket_error.diagnostic << "\n";
+        std::cerr << "Failed to accept connection before starting server: " << diagnostic(accept_result.error()) << "\n";
     }
 }
 
@@ -80,7 +98,7 @@ int test_full_lifecycle(const fs::path &config_path)
 
     if (const auto result = server.start(config_loader.config().tcp_server); !result)
     {
-        std::cerr << "Failed to start server: " << result.error().socket_error.diagnostic << "\n";
+        std::cerr << "Failed to start server: " << diagnostic(result.error()) << "\n";
         return 1;
     }
 
@@ -88,7 +106,7 @@ int test_full_lifecycle(const fs::path &config_path)
 
     if (const auto accept_result = server.accept_connection(); !accept_result)
     {
-        std::cerr << "Failed to accept connection: " << accept_result.error().socket_error.diagnostic << "\n";
+        std::cerr << "Failed to accept connection: " << diagnostic(accept_result.error()) << "\n";
         return 1;
     }
 

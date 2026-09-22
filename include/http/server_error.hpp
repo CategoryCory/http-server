@@ -2,6 +2,8 @@
 
 #include <http/socket_error.hpp>
 
+#include <optional>
+
 /// @brief Error codes for HTTP server failures.
 enum class ServerErrorCode
 {
@@ -15,12 +17,13 @@ enum class ServerErrorCode
     already_running,
 };
 
+// TODO: Consider adding factory functions for creating common server errors.
 /// @brief Represents an error encountered by the HTTP server.
 struct ServerError
 {
     /// @brief The error code indicating the type of server error.
     ServerErrorCode code;
 
-    /// @brief The socket error that caused the server operation to fail.
-    SocketError socket_error;
+    /// @brief The socket error that caused the failure, when @ref code is socket_failure.
+    std::optional<SocketError> socket_error;
 };

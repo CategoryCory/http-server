@@ -1,7 +1,9 @@
 #include <config/http_server_config_loader.hpp>
 
+#include <cstdint>
 #include <exception>
 #include <expected>
+#include <filesystem>
 #include <limits>
 #include <toml++/toml.hpp>
 #include <utility>

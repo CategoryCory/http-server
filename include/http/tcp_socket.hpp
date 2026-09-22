@@ -3,6 +3,7 @@
 #include <http/socket_error.hpp>
 #include <http/unique_file_descriptor.hpp>
 
+#include <cstdint>
 #include <expected>
 #include <netinet/in.h>
 

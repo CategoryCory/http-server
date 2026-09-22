@@ -1,7 +1,11 @@
 #include <http/tcp_socket.hpp>
 
+#include <arpa/inet.h>
 #include <cerrno>
+#include <cstdint>
+#include <expected>
 #include <sys/socket.h>
+#include <system_error>
 #include <utility>
 
 TcpSocket::TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state)
