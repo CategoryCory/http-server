@@ -78,7 +78,8 @@ void test_accept_before_start()
 
     if (const auto accept_result = server.accept_connection(); !accept_result)
     {
-        std::cerr << "Failed to accept connection before starting server: " << diagnostic(accept_result.error()) << "\n";
+        std::cerr << "Failed to accept connection before starting server: " << diagnostic(accept_result.error())
+                  << "\n";
     }
 }
 
