@@ -215,6 +215,7 @@ clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp
 - [ ] Generate HTTP responses
 - [ ] Add request and response tests
 - [x] Document configuration and usage
+- [ ] Add [work log](WORKLOG.md)
 
 ## License
 
