@@ -5,6 +5,7 @@ IndentWidth: 4
 ContinuationIndentWidth: 4
 ColumnLimit: 120
 UseTab: Never
+InsertNewlineAtEOF: true
 
 # Braces
 BreakBeforeBraces: Allman
@@ -24,6 +25,7 @@ AllowShortBlocksOnASingleLine: Never
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
+AllowShortLambdasOnASingleLine: None
 
 # Function calls / declarations
 BinPackArguments: false

@@ -18,17 +18,21 @@ std::expected<void, SocketError> TcpSocket::initialize_socket()
 {
     if (m_state != TcpSocketState::Uninitialized)
     {
-        return std::unexpected(
-            SocketError{.code = SocketErrorCode::invalid_state, .diagnostic = "Socket already initialized"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::invalid_state,
+            .diagnostic = "Socket already initialized",
+        });
     }
 
     const auto socket_fd = ::socket(AF_INET, SOCK_STREAM, 0);
 
     if (socket_fd < 0)
     {
-        return std::unexpected(SocketError{.code = SocketErrorCode::system_error,
-                                           .error_code = {errno, std::generic_category()},
-                                           .diagnostic = "Failed to create socket"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::system_error,
+            .error_code = {errno, std::generic_category()},
+            .diagnostic = "Failed to create socket",
+        });
     }
 
     UniqueFileDescriptor temp_fd{socket_fd};
@@ -37,9 +41,11 @@ std::expected<void, SocketError> TcpSocket::initialize_socket()
     const int sockopt_result = ::setsockopt(temp_fd.get(), SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
     if (sockopt_result < 0)
     {
-        return std::unexpected(SocketError{.code = SocketErrorCode::system_error,
-                                           .error_code = {errno, std::generic_category()},
-                                           .diagnostic = "Failed to set socket options"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::system_error,
+            .error_code = {errno, std::generic_category()},
+            .diagnostic = "Failed to set socket options",
+        });
     }
 
     m_socket_fd = std::move(temp_fd);
@@ -51,8 +57,10 @@ std::expected<void, SocketError> TcpSocket::bind_address(int port)
 {
     if (!std::in_range<std::uint16_t>(port))
     {
-        return std::unexpected(SocketError{.code = SocketErrorCode::invalid_port,
-                                           .diagnostic = "Port number must be in the range 0-65535"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::invalid_port,
+            .diagnostic = "Port number must be in the range 0-65535",
+        });
     }
 
     if (const auto state_result = require_socket_state(TcpSocketState::Initialized); !state_result)
@@ -68,9 +76,11 @@ std::expected<void, SocketError> TcpSocket::bind_address(int port)
 
     if (::bind(m_socket_fd.get(), reinterpret_cast<const sockaddr *>(&m_addr), sizeof(m_addr)) < 0)
     {
-        return std::unexpected(SocketError{.code = SocketErrorCode::system_error,
-                                           .error_code = {errno, std::generic_category()},
-                                           .diagnostic = "Failed to bind socket"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::system_error,
+            .error_code = {errno, std::generic_category()},
+            .diagnostic = "Failed to bind socket",
+        });
     }
 
     m_state = TcpSocketState::Bound;
@@ -86,9 +96,11 @@ std::expected<void, SocketError> TcpSocket::listen_for_connections(int max_pendi
 
     if (::listen(m_socket_fd.get(), max_pending_connections) < 0)
     {
-        return std::unexpected(SocketError{.code = SocketErrorCode::system_error,
-                                           .error_code = {errno, std::generic_category()},
-                                           .diagnostic = "Failed to listen for connections"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::system_error,
+            .error_code = {errno, std::generic_category()},
+            .diagnostic = "Failed to listen for connections",
+        });
     }
 
     m_state = TcpSocketState::Listening;
@@ -111,9 +123,11 @@ std::expected<TcpSocket, SocketError> TcpSocket::accept_connection() const
 
     if (client_fd < 0)
     {
-        return std::unexpected(SocketError{.code = SocketErrorCode::system_error,
-                                           .error_code = {errno, std::generic_category()},
-                                           .diagnostic = "Failed to accept connection"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::system_error,
+            .error_code = {errno, std::generic_category()},
+            .diagnostic = "Failed to accept connection",
+        });
     }
 
     return TcpSocket(UniqueFileDescriptor{client_fd}, TcpSocketState::Connected);
@@ -134,8 +148,10 @@ std::expected<void, SocketError> TcpSocket::require_socket_state(TcpSocketState 
 {
     if (!is_valid() || m_state != required_state)
     {
-        return std::unexpected(
-            SocketError{.code = SocketErrorCode::invalid_state, .diagnostic = "Socket is not in the required state"});
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::invalid_state,
+            .diagnostic = "Socket is not in the required state",
+        });
     }
 
     return {};

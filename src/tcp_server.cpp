@@ -10,25 +10,37 @@ std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_
     {
         return std::unexpected(ServerError{
             .code = ServerErrorCode::already_running,
-            .socket_error = std::nullopt
+            .socket_error = std::nullopt,
         });
     }
 
     TcpSocket temp_socket{};
 
     return temp_socket.initialize_socket()
-        .and_then([&] { return temp_socket.bind_address(server_config.port); })
-        .and_then([&] { return temp_socket.listen_for_connections(server_config.max_backlog); })
-        .transform([&]() noexcept {
-            m_socket = std::move(temp_socket);
-            m_state = TcpServerState::Running;
-        })
-        .transform_error([](SocketError error) {
-            return ServerError{
-                .code = ServerErrorCode::socket_failure,
-                .socket_error = std::move(error)
-            };
-        });
+        .and_then(
+            [&]
+            {
+                return temp_socket.bind_address(server_config.port);
+            })
+        .and_then(
+            [&]
+            {
+                return temp_socket.listen_for_connections(server_config.max_backlog);
+            })
+        .transform(
+            [&]() noexcept
+            {
+                m_socket = std::move(temp_socket);
+                m_state = TcpServerState::Running;
+            })
+        .transform_error(
+            [](SocketError error)
+            {
+                return ServerError{
+                    .code = ServerErrorCode::socket_failure,
+                    .socket_error = std::move(error),
+                };
+            });
 }
 
 std::expected<TcpSocket, ServerError> TcpServer::accept_connection() const
@@ -37,7 +49,7 @@ std::expected<TcpSocket, ServerError> TcpServer::accept_connection() const
     {
         return std::unexpected(ServerError{
             .code = ServerErrorCode::not_running,
-            .socket_error = std::nullopt
+            .socket_error = std::nullopt,
         });
     }
 
@@ -46,7 +58,7 @@ std::expected<TcpSocket, ServerError> TcpServer::accept_connection() const
     {
         return std::unexpected(ServerError{
             .code = ServerErrorCode::socket_failure,
-            .socket_error = result.error()
+            .socket_error = result.error(),
         });
     }
 
