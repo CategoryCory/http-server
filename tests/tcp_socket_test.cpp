@@ -7,6 +7,12 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+class TcpSocketInvalidPortTest : public testing::TestWithParam<int>
+{
+};
+
+INSTANTIATE_TEST_SUITE_P(OutOfRange, TcpSocketInvalidPortTest, testing::Values(-1, 65536));
+
 TEST(TcpSocketTest, DefaultConstructionIsInvalid)
 {
     const TcpSocket socket;
@@ -69,10 +75,6 @@ TEST(TcpSocketTest, BindingCannotBeRepeated)
     EXPECT_EQ(result.error().code, SocketErrorCode::invalid_state);
 }
 
-class TcpSocketInvalidPortTest : public testing::TestWithParam<int>
-{
-};
-
 TEST_P(TcpSocketInvalidPortTest, BindingRejectsPortOutsideValidRange)
 {
     TcpSocket socket;
@@ -82,8 +84,6 @@ TEST_P(TcpSocketInvalidPortTest, BindingRejectsPortOutsideValidRange)
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error().code, SocketErrorCode::invalid_port);
 }
-
-INSTANTIATE_TEST_SUITE_P(OutOfRange, TcpSocketInvalidPortTest, testing::Values(-1, 65536));
 
 TEST(TcpSocketTest, BindingToEphemeralPortAssignsPort)
 {
