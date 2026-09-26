@@ -17,16 +17,8 @@ std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_
     TcpSocket temp_socket{};
 
     return temp_socket.initialize_socket()
-        .and_then(
-            [&]
-            {
-                return temp_socket.bind_address(server_config.port);
-            })
-        .and_then(
-            [&]
-            {
-                return temp_socket.listen_for_connections(server_config.max_backlog);
-            })
+        .and_then([&] { return temp_socket.bind_address(server_config.port); })
+        .and_then([&] { return temp_socket.listen_for_connections(server_config.max_backlog); })
         .transform(
             [&]() noexcept
             {

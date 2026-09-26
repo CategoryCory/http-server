@@ -25,7 +25,6 @@ AllowShortBlocksOnASingleLine: Never
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortLambdasOnASingleLine: None
 
 # Function calls / declarations
 BinPackArguments: false
