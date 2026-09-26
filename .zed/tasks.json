@@ -1,0 +1,53 @@
+[
+  {
+    "label": "Configure debug",
+    "command": "cmake",
+    "args": ["--preset", "debug"],
+    "save": "all"
+  },
+  {
+    "label": "Build debug",
+    "command": "cmake --preset debug && cmake --build --preset debug",
+    "save": "all"
+  },
+  {
+    "label": "Configure release",
+    "command": "cmake",
+    "args": ["--preset", "release"],
+    "save": "all"
+  },
+  {
+    "label": "Build release",
+    "command": "cmake --preset release && cmake --build --preset release",
+    "save": "all"
+  },
+  {
+    "label": "Clean debug",
+    "command": "cmake",
+    "args": ["--build", "--preset", "debug", "--target", "clean"]
+  },
+  {
+    "label": "Clean release",
+    "command": "cmake",
+    "args": ["--build", "--preset", "release", "--target", "clean"]
+  },
+  {
+    "label": "Clean presets",
+    "command": "cmake --build --preset debug --target clean && cmake --build --preset release --target clean"
+  },
+  {
+    "label": "Run tests",
+    "command": "cmake --preset debug && cmake --build --preset debug && ctest --preset debug",
+    "save": "all"
+  },
+  {
+    "label": "Run clang-tidy",
+    "command": "cmake --preset debug && cmake --build --preset debug && clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp",
+    "save": "all"
+  },
+  {
+    "label": "Run clang-format",
+    "command": "find include src tests -type f \\( -name '*.cpp' -o -name '*.hpp' \\) -exec clang-format -i {} +",
+    "save": "all"
+  }
+]
