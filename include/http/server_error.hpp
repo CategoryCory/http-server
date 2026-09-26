@@ -2,10 +2,11 @@
 
 #include <http/socket_error.hpp>
 
+#include <cstdint>
 #include <optional>
 
 /// @brief Error codes for HTTP server failures.
-enum class ServerErrorCode
+enum class ServerErrorCode : std::uint8_t
 {
     /// @brief Indicates a failure related to the underlying socket.
     socket_failure,

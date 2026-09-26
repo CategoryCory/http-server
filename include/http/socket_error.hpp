@@ -1,10 +1,11 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <system_error>
 
 /// @brief Error codes for socket-related failures.
-enum class SocketErrorCode
+enum class SocketErrorCode : std::uint8_t
 {
     /// @brief The socket is in an invalid state for the requested operation.
     invalid_state,
