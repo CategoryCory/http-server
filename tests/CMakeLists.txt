@@ -20,3 +20,4 @@ add_http_server_test(http_server_config_loader_tests http_server_config_loader_t
 add_http_server_test(http_server_tests tcp_server_test.cpp)
 add_http_server_test(tcp_socket_tests tcp_socket_test.cpp)
 add_http_server_test(unique_file_descriptor_tests unique_file_descriptor_test.cpp)
+add_http_server_test(tcp_connection_tests tcp_connection_test.cpp)

@@ -3,7 +3,6 @@
 
 #include <arpa/inet.h>
 #include <gtest/gtest.h>
-#include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>
 
