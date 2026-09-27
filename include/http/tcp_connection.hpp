@@ -8,6 +8,8 @@
 #include <netinet/in.h>
 #include <string>
 
+class TcpConnectionTestFactory;
+
 class TcpConnection
 {
 public:
@@ -18,5 +20,7 @@ private:
     TcpConnection(UniqueFileDescriptor fd, sockaddr_in ip_addr);
     UniqueFileDescriptor m_connected_client{};
     sockaddr_in m_client_endpoint{};
+
     friend class TcpSocket;
+    friend class TcpConnectionTestFactory;
 };
