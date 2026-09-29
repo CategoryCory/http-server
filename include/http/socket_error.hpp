@@ -13,6 +13,9 @@ enum class SocketErrorCode : std::uint8_t
     /// @brief The specified port number is invalid.
     invalid_port,
 
+    /// @brief Socket configuration failed.
+    configuration_error,
+
     /// @brief A system-level error occurred.
     system_error,
 };

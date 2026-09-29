@@ -9,11 +9,14 @@ enum class TcpConnectionErrorCode : std::uint8_t
     /// @brief Failed to convert IP address to the required format.
     ip_addr_conversion_failure,
 
-    /// @brief Failed to send data.
-    send_failure,
-
     /// @brief Send returned zero bytes sent.
     send_no_progress,
+
+    /// @brief The connected client was not available.
+    send_client_unavailable,
+
+    /// @brief Failed to send data.
+    send_general_failure,
 };
 
 /// @brief Represents an error that occurred during a TCP connection attempt.

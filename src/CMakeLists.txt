@@ -7,6 +7,13 @@ add_library(
     unique_file_descriptor.cpp
 )
 
+target_compile_definitions(
+    http_server_lib
+    PRIVATE
+    $<$<PLATFORM_ID:Darwin>:HTTP_SERVER_PLATFORM_MACOS>
+    $<$<PLATFORM_ID:Linux>:HTTP_SERVER_PLATFORM_LINUX>
+)
+
 add_library(
     http_server::lib
     ALIAS http_server_lib

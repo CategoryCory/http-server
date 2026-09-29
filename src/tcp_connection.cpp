@@ -1,3 +1,4 @@
+#include <http/platform.hpp>
 #include <http/tcp_connection.hpp>
 #include <http/tcp_connection_error.hpp>
 #include <http/unique_file_descriptor.hpp>
@@ -50,19 +51,26 @@ std::expected<void, TcpConnectionError> TcpConnection::send(const std::span<cons
         auto data_remaining = data.last(data.size_bytes() - total_bytes_sent);
 
         if (const auto bytes_sent =
-                ::send(m_connected_client.get(), data_remaining.data(), data_remaining.size_bytes(), 0);
+                ::send(m_connected_client.get(), data_remaining.data(), data_remaining.size_bytes(), TCP_SEND_FLAGS);
             bytes_sent < 0)
         {
+            // TODO: Add ECONNRESET and ENOTCONN
             switch (const int error_code = errno)
             {
             // Operation interrupted; continue
             case EINTR:
                 continue;
 
+            case EPIPE:
+                return std::unexpected(TcpConnectionError{
+                    .code = TcpConnectionErrorCode::send_client_unavailable,
+                    .error_code = {error_code, std::generic_category()},
+                });
+
             // Default error handler
             default:
                 return std::unexpected(TcpConnectionError{
-                    .code = TcpConnectionErrorCode::send_failure,
+                    .code = TcpConnectionErrorCode::send_general_failure,
                     .error_code = {error_code, std::generic_category()},
                 });
             }

@@ -1,3 +1,5 @@
+#include "http/socket_error.hpp"
+#include <http/platform.hpp>
 #include <http/tcp_connection.hpp>
 #include <http/tcp_socket.hpp>
 #include <http/unique_file_descriptor.hpp>
@@ -118,11 +120,11 @@ std::expected<TcpConnection, SocketError> TcpSocket::accept_connection() const
 
     sockaddr_in client_addr{};
     socklen_t client_addr_len = sizeof(client_addr);
-    const int client_fd = ::accept(m_socket_fd.get(), reinterpret_cast<sockaddr *>(&client_addr), &client_addr_len);
+    const int fd = ::accept(m_socket_fd.get(), reinterpret_cast<sockaddr *>(&client_addr), &client_addr_len);
 
     // TODO: Handle EINTR, EAGAIN, and other recoverable errors during accept()
 
-    if (client_fd < 0)
+    if (fd < 0)
     {
         return std::unexpected(SocketError{
             .code = SocketErrorCode::system_error,
@@ -131,7 +133,15 @@ std::expected<TcpConnection, SocketError> TcpSocket::accept_connection() const
         });
     }
 
-    return TcpConnection(UniqueFileDescriptor{client_fd}, client_addr);
+    UniqueFileDescriptor client_fd{fd};
+
+    if (bool configure_result = configure_connected_socket(client_fd.get()); !configure_result)
+    {
+        return std::unexpected(SocketError{.code = SocketErrorCode::configuration_error,
+                                           .diagnostic = "Error occurred when configuring socket"});
+    }
+
+    return TcpConnection(std::move(client_fd), client_addr);
 }
 
 void TcpSocket::close() noexcept
