@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <expected>
 #include <netinet/in.h>
+#include <span>
 #include <string>
 
 class TcpConnectionTestFactory;
@@ -22,6 +23,11 @@ public:
     /// @brief Retrieves the port number of the connected client.
     /// @return The client's port number.
     std::uint16_t get_client_port() const;
+
+    /// @brief Sends data to the connected client over the TCP connection.
+    /// @param data The data to be sent to the client.
+    /// @return `std::expected<void, TcpConnectionError>` indicating success or failure of the send operation.
+    std::expected<void, TcpConnectionError> send(std::span<const std::byte> data);
 
     /// @brief Checks if the TCP connection is valid.
     /// @return `true` if the connection is valid, `false` otherwise.
