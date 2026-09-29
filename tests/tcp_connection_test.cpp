@@ -2,7 +2,6 @@
 #include <http/unique_file_descriptor.hpp>
 #include "tcp_connection_test_factory.hpp"
 
-#include "gtest/gtest.h"
 #include <algorithm>
 #include <arpa/inet.h>
 #include <cstdint>
