@@ -10,12 +10,25 @@
 
 class TcpConnectionTestFactory;
 
+/// @brief Represents a TCP connection with a client, providing access to the client's IP address,
+/// port, and connection status.
 class TcpConnection
 {
 public:
+    /// @brief Retrieves the IP address of the connected client.
+    /// @return The client's IP address as a string, or an error if the address could not be obtained.
     [[nodiscard]] std::expected<std::string, TcpConnectionError> get_client_ip_address() const;
+
+    /// @brief Retrieves the port number of the connected client.
+    /// @return The client's port number.
     std::uint16_t get_client_port() const;
+
+    /// @brief Checks if the TCP connection is valid.
+    /// @return `true` if the connection is valid, `false` otherwise.
     [[nodiscard]] bool is_valid() const noexcept { return m_connected_client.is_valid(); }
+
+    /// @brief Retrieves the underlying file descriptor for the connected client.
+    /// @return The file descriptor as an integer.
     [[nodiscard]] int get() const noexcept { return m_connected_client.get(); }
 
 private:
