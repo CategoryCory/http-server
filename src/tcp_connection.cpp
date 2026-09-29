@@ -14,7 +14,7 @@
 #include <system_error>
 #include <utility>
 
-TcpConnection::TcpConnection(UniqueFileDescriptor fd, sockaddr_in ip_addr)
+TcpConnection::TcpConnection(UniqueFileDescriptor fd, const sockaddr_in ip_addr)
     : m_connected_client{std::move(fd)},
       m_client_endpoint(ip_addr)
 {
@@ -24,8 +24,7 @@ std::expected<std::string, TcpConnectionError> TcpConnection::get_client_ip_addr
 {
     std::array<char, INET_ADDRSTRLEN> buffer{};
 
-    const char *result =
-        ::inet_ntop(AF_INET, &m_client_endpoint.sin_addr, buffer.data(), static_cast<socklen_t>(buffer.size()));
+    const char *result = ::inet_ntop(AF_INET, &m_client_endpoint.sin_addr, buffer.data(), buffer.size());
 
     if (result == nullptr)
     {
@@ -42,20 +41,19 @@ std::uint16_t TcpConnection::get_client_port() const
     return ntohs(m_client_endpoint.sin_port);
 }
 
-std::expected<void, TcpConnectionError> TcpConnection::send(std::span<const std::byte> data)
+std::expected<void, TcpConnectionError> TcpConnection::send(const std::span<const std::byte> data) const
 {
     std::size_t total_bytes_sent = 0;
 
     while (total_bytes_sent < data.size_bytes())
     {
         auto data_remaining = data.last(data.size_bytes() - total_bytes_sent);
-        auto bytes_sent = ::send(m_connected_client.get(), data_remaining.data(), data_remaining.size_bytes(), 0);
 
-        if (bytes_sent < 0)
+        if (const auto bytes_sent =
+                ::send(m_connected_client.get(), data_remaining.data(), data_remaining.size_bytes(), 0);
+            bytes_sent < 0)
         {
-            const int error_code = errno;
-
-            switch (error_code)
+            switch (const int error_code = errno)
             {
             // Operation interrupted; continue
             case EINTR:

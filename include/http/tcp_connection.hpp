@@ -27,7 +27,7 @@ public:
     /// @brief Sends data to the connected client over the TCP connection.
     /// @param data The data to be sent to the client.
     /// @return `std::expected<void, TcpConnectionError>` indicating success or failure of the send operation.
-    std::expected<void, TcpConnectionError> send(std::span<const std::byte> data);
+    [[nodiscard]] std::expected<void, TcpConnectionError> send(std::span<const std::byte> data) const;
 
     /// @brief Checks if the TCP connection is valid.
     /// @return `true` if the connection is valid, `false` otherwise.
