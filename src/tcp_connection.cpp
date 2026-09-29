@@ -20,11 +20,8 @@ std::expected<std::string, TcpConnectionError> TcpConnection::get_client_ip_addr
 {
     std::array<char, INET_ADDRSTRLEN> buffer{};
 
-    const char *result = ::inet_ntop(
-        AF_INET,
-        &m_client_endpoint.sin_addr,
-        buffer.data(),
-        static_cast<socklen_t>(buffer.size()));
+    const char *result =
+        ::inet_ntop(AF_INET, &m_client_endpoint.sin_addr, buffer.data(), static_cast<socklen_t>(buffer.size()));
 
     if (result == nullptr)
     {

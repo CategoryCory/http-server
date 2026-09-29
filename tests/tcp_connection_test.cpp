@@ -1,5 +1,6 @@
 #include <http/tcp_connection.hpp>
 #include <http/unique_file_descriptor.hpp>
+
 #include "tcp_connection_test_factory.hpp"
 
 #include <algorithm>
@@ -24,53 +25,43 @@ struct PortTestCase
     std::uint16_t expected;
 };
 
-class TcpConnectionIpAddressTest
-    : public ::testing::TestWithParam<IpAddressTestCase>
-{};
+class TcpConnectionIpAddressTest : public ::testing::TestWithParam<IpAddressTestCase>
+{
+};
 
-class TcpConnectionPortTest
-    : public ::testing::TestWithParam<PortTestCase>
-{};
+class TcpConnectionPortTest : public ::testing::TestWithParam<PortTestCase>
+{
+};
 
-INSTANTIATE_TEST_SUITE_P(
-    IpAddresses,
-    TcpConnectionIpAddressTest,
-    ::testing::Values(
-        IpAddressTestCase{std::nullopt, "0.0.0.0"},
-        IpAddressTestCase{std::string{"203.0.113.42"}, "203.0.113.42"}
-    ),
-    [](const ::testing::TestParamInfo<IpAddressTestCase>& info)
-    {
-        if (!info.param.input)
-        {
-            return std::string{"UnspecifiedAddress"};
-        }
+INSTANTIATE_TEST_SUITE_P(IpAddresses,
+                         TcpConnectionIpAddressTest,
+                         ::testing::Values(IpAddressTestCase{std::nullopt, "0.0.0.0"},
+                                           IpAddressTestCase{std::string{"203.0.113.42"}, "203.0.113.42"}),
+                         [](const ::testing::TestParamInfo<IpAddressTestCase> &info)
+                         {
+                             if (!info.param.input)
+                             {
+                                 return std::string{"UnspecifiedAddress"};
+                             }
 
-        auto name = *info.param.input;
-        std::ranges::replace(name, '.', '_');
+                             auto name = *info.param.input;
+                             std::ranges::replace(name, '.', '_');
 
-        return name;
-    }
-);
+                             return name;
+                         });
 
-INSTANTIATE_TEST_SUITE_P(
-    Ports,
-    TcpConnectionPortTest,
-    ::testing::Values(
-        PortTestCase{0, 0},
-        PortTestCase{1234, 1234}
-    ),
-    [](const ::testing::TestParamInfo<PortTestCase>& info)
-    {
-        return info.param.input
-            ? std::to_string(*info.param.input)
-            : std::string{"UnspecifiedPort"};
-    }
-);
+INSTANTIATE_TEST_SUITE_P(Ports,
+                         TcpConnectionPortTest,
+                         ::testing::Values(PortTestCase{0, 0}, PortTestCase{1234, 1234}),
+                         [](const ::testing::TestParamInfo<PortTestCase> &info)
+                         {
+                             return info.param.input ? std::to_string(*info.param.input)
+                                                     : std::string{"UnspecifiedPort"};
+                         });
 
 TEST_P(TcpConnectionIpAddressTest, ReturnsCorrectIpAddress)
 {
-    const auto& [input, expected] = GetParam();
+    const auto &[input, expected] = GetParam();
 
     sockaddr_in client_address{};
     client_address.sin_family = AF_INET;
@@ -89,7 +80,7 @@ TEST_P(TcpConnectionIpAddressTest, ReturnsCorrectIpAddress)
 
 TEST_P(TcpConnectionPortTest, ReturnsCorrectPort)
 {
-    const auto& [input, expected] = GetParam();
+    const auto &[input, expected] = GetParam();
 
     sockaddr_in client_address{};
     client_address.sin_family = AF_INET;
