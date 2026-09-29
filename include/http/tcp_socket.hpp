@@ -1,6 +1,7 @@
 #pragma once
 
 #include <http/socket_error.hpp>
+#include <http/tcp_connection.hpp>
 #include <http/unique_file_descriptor.hpp>
 
 #include <cstdint>
@@ -36,6 +37,7 @@ enum class TcpSocketState : std::uint8_t
     /// @brief The socket is accepting incoming connections.
     Listening,
 
+    // TODO: Do we still need this option?
     /// @brief The socket represents an accepted client connection.
     Connected
 };
@@ -67,9 +69,9 @@ public:
     [[nodiscard]] std::expected<void, SocketError> listen_for_connections(int max_backlog);
 
     /// @brief Accepts an incoming connection on the listening socket.
-    /// @return An engaged std::expected containing a connected TcpSocket on success;
+    /// @return An engaged std::expected containing a TcpConnection on success;
     ///         otherwise an unexpected SocketError.
-    [[nodiscard]] std::expected<TcpSocket, SocketError> accept_connection() const;
+    [[nodiscard]] std::expected<TcpConnection, SocketError> accept_connection() const;
 
     /// @brief Closes the owned socket if it is open.
     void close() noexcept;
@@ -83,6 +85,7 @@ public:
     [[nodiscard]] int get() const noexcept { return m_socket_fd.get(); }
 
 private:
+    // TODO: Do we still need this constructor?
     TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state);
     UniqueFileDescriptor m_socket_fd{};
     sockaddr_in m_addr{};

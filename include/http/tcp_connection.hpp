@@ -15,6 +15,8 @@ class TcpConnection
 public:
     [[nodiscard]] std::expected<std::string, TcpConnectionError> get_client_ip_address() const;
     std::uint16_t get_client_port() const;
+    [[nodiscard]] bool is_valid() const noexcept { return m_connected_client.is_valid(); }
+    [[nodiscard]] int get() const noexcept { return m_connected_client.get(); }
 
 private:
     TcpConnection(UniqueFileDescriptor fd, sockaddr_in ip_addr);

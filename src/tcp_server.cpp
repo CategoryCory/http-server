@@ -35,7 +35,7 @@ std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_
             });
 }
 
-std::expected<TcpSocket, ServerError> TcpServer::accept_connection() const
+std::expected<TcpConnection, ServerError> TcpServer::accept_connection() const
 {
     if (m_state != TcpServerState::Running)
     {

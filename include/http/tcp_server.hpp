@@ -2,6 +2,7 @@
 
 #include <config/tcp_server_config.hpp>
 #include <http/server_error.hpp>
+#include <http/tcp_connection.hpp>
 #include <http/tcp_socket.hpp>
 
 #include <cstdint>
@@ -35,9 +36,9 @@ public:
     [[nodiscard]] std::expected<void, ServerError> start(const TcpServerConfig &server_config);
 
     /// @brief Accepts an incoming client connection.
-    /// @return An engaged std::expected containing the accepted TcpSocket on success; otherwise an unexpected
+    /// @return An engaged std::expected containing the TcpConnection on success; otherwise an unexpected
     /// ServerError.
-    [[nodiscard]] std::expected<TcpSocket, ServerError> accept_connection() const;
+    [[nodiscard]] std::expected<TcpConnection, ServerError> accept_connection() const;
 
     /// @brief Checks if the TCP server is currently running.
     /// @return true if the server is running; otherwise false.

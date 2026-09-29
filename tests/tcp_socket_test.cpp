@@ -167,11 +167,9 @@ TEST(TcpSocketTest, AcceptingConnectionReturnsConnectedSocket)
 
     auto connection_result = listener.accept_connection();
     ASSERT_TRUE(connection_result);
-    TcpSocket connection = std::move(*connection_result);
+
+    auto connection = std::move(*connection_result);
 
     EXPECT_TRUE(connection.is_valid());
     EXPECT_GE(connection.get(), 0);
-    const auto result = connection.accept_connection();
-    ASSERT_FALSE(result);
-    EXPECT_EQ(result.error().code, SocketErrorCode::invalid_state);
 }

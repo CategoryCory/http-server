@@ -1,3 +1,5 @@
+#include "http/unique_file_descriptor.hpp"
+#include <http/tcp_connection.hpp>
 #include <http/tcp_socket.hpp>
 
 #include <arpa/inet.h>
@@ -107,7 +109,7 @@ std::expected<void, SocketError> TcpSocket::listen_for_connections(int max_pendi
     return {};
 }
 
-std::expected<TcpSocket, SocketError> TcpSocket::accept_connection() const
+std::expected<TcpConnection, SocketError> TcpSocket::accept_connection() const
 {
     if (const auto state_result = require_socket_state(TcpSocketState::Listening); !state_result)
     {
@@ -119,7 +121,6 @@ std::expected<TcpSocket, SocketError> TcpSocket::accept_connection() const
     const int client_fd = ::accept(m_socket_fd.get(), reinterpret_cast<sockaddr *>(&client_addr), &client_addr_len);
 
     // TODO: Handle EINTR, EAGAIN, and other recoverable errors during accept()
-    // TODO: Handle client address information if needed
 
     if (client_fd < 0)
     {
@@ -130,7 +131,7 @@ std::expected<TcpSocket, SocketError> TcpSocket::accept_connection() const
         });
     }
 
-    return TcpSocket(UniqueFileDescriptor{client_fd}, TcpSocketState::Connected);
+    return TcpConnection(UniqueFileDescriptor{client_fd}, client_addr);
 }
 
 void TcpSocket::close() noexcept
