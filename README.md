@@ -5,12 +5,13 @@ A work-in-progress C++ portfolio project to build a simple, lightweight, and pro
 ## Status
 
 The project currently provides a tested TCP server foundation: configuration
-loading, socket lifecycle management, listener startup, and client connection
-acceptance. HTTP request handling and response generation are planned.
+loading, socket lifecycle management, listener startup, client connection
+acceptance, peer address inspection, and connection data transmission. HTTP
+request handling and response generation are planned.
 
-The command-line program currently validates its configuration and starts the
-listener before exiting. A long-running connection-processing loop is planned
-as part of the HTTP server work.
+The command-line program validates its configuration, starts the listener,
+accepts one client connection, then stops and exits. A long-running
+connection-processing loop is planned as part of the HTTP server work.
 
 ## Goals
 
