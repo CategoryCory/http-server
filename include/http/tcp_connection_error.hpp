@@ -17,6 +17,12 @@ enum class TcpConnectionErrorCode : std::uint8_t
 
     /// @brief Failed to send data.
     send_general_failure,
+
+    /// @brief Indicates that the `receive` buffer had a capacity of zero.
+    recv_no_buffer,
+
+    /// @brief Failed to receive data.
+    recv_general_failure,
 };
 
 /// @brief Represents an error that occurred during a TCP connection attempt.

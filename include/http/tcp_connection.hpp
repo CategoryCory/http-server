@@ -4,10 +4,24 @@
 #include <http/unique_file_descriptor.hpp>
 
 #include <arpa/inet.h>
+#include <cstddef>
+#include <cstdint>
 #include <expected>
 #include <netinet/in.h>
 #include <span>
 #include <string>
+
+enum class ReceiveResultStatus : std::uint8_t
+{
+    data_received,
+    peer_closed,
+};
+
+struct ReceiveResult
+{
+    ReceiveResultStatus status;
+    std::size_t bytes_received;
+};
 
 class TcpConnectionTestFactory;
 
@@ -28,6 +42,8 @@ public:
     /// @param data The data to be sent to the client.
     /// @return `std::expected<void, TcpConnectionError>` indicating success or failure of the send operation.
     [[nodiscard]] std::expected<void, TcpConnectionError> send(std::span<const std::byte> data) const;
+
+    [[nodiscard]] std::expected<ReceiveResult, TcpConnectionError> receive(std::span<std::byte> buffer);
 
     /// @brief Checks if the TCP connection is valid.
     /// @return `true` if the connection is valid, `false` otherwise.

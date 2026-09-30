@@ -89,3 +89,37 @@ std::expected<void, TcpConnectionError> TcpConnection::send(const std::span<cons
 
     return {};
 }
+
+std::expected<ReceiveResult, TcpConnectionError> TcpConnection::receive(std::span<std::byte> buffer)
+{
+    if (buffer.size_bytes() == 0)
+    {
+        return std::unexpected(TcpConnectionError{
+            .code = TcpConnectionErrorCode::recv_no_buffer,
+        });
+    }
+
+    const auto bytes_received = ::recv(m_connected_client.get(), buffer.data(), buffer.size_bytes(), 0);
+
+    if (bytes_received < 0)
+    {
+        // TODO: expand error handling
+        return std::unexpected(TcpConnectionError{
+            .code = TcpConnectionErrorCode::recv_general_failure,
+        });
+    }
+    else if (bytes_received == 0)
+    {
+        return ReceiveResult{
+            .status = ReceiveResultStatus::peer_closed,
+            .bytes_received = 0,
+        };
+    }
+    else
+    {
+        return ReceiveResult{
+            .status = ReceiveResultStatus::data_received,
+            .bytes_received = static_cast<std::size_t>(bytes_received),
+        };
+    }
+}
