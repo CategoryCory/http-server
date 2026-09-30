@@ -56,7 +56,7 @@ public:
     /// @brief Receives data from the connected client over the TCP connection.
     /// @param buffer The buffer to store the received data.
     /// @return `std::expected<ReceiveResult, TcpConnectionError>` indicating the result of the receive operation.
-    [[nodiscard]] std::expected<ReceiveResult, TcpConnectionError> receive(std::span<std::byte> buffer);
+    [[nodiscard]] std::expected<ReceiveResult, TcpConnectionError> receive(std::span<std::byte> buffer) const;
 
     /// @brief Checks if the TCP connection is valid.
     /// @return `true` if the connection is valid, `false` otherwise.
