@@ -11,15 +11,25 @@
 #include <span>
 #include <string>
 
+/// @brief Represents the result of a receive operation on a TCP connection.
+/// @details This structure contains the status of the receive operation and the number of bytes received.
 enum class ReceiveResultStatus : std::uint8_t
 {
+    /// @brief Indicates that data was successfully received from the client.
     data_received,
+
+    /// @brief Indicates that the peer has closed the connection.
     peer_closed,
 };
 
+/// @brief Represents the result of a receive operation on a TCP connection.
+/// @details This structure contains the status of the receive operation and the number of bytes received.
 struct ReceiveResult
 {
+    /// @brief The status of the receive operation.
     ReceiveResultStatus status;
+
+    /// @brief The number of bytes received from the client.
     std::size_t bytes_received;
 };
 
@@ -43,6 +53,9 @@ public:
     /// @return `std::expected<void, TcpConnectionError>` indicating success or failure of the send operation.
     [[nodiscard]] std::expected<void, TcpConnectionError> send(std::span<const std::byte> data) const;
 
+    /// @brief Receives data from the connected client over the TCP connection.
+    /// @param buffer The buffer to store the received data.
+    /// @return `std::expected<ReceiveResult, TcpConnectionError>` indicating the result of the receive operation.
     [[nodiscard]] std::expected<ReceiveResult, TcpConnectionError> receive(std::span<std::byte> buffer);
 
     /// @brief Checks if the TCP connection is valid.
