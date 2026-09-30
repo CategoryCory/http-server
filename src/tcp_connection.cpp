@@ -25,7 +25,8 @@ std::expected<std::string, TcpConnectionError> TcpConnection::get_client_ip_addr
 {
     std::array<char, INET_ADDRSTRLEN> buffer{};
 
-    if (const char *result = ::inet_ntop(AF_INET, &m_client_endpoint.sin_addr, buffer.data(), buffer.size()); result == nullptr)
+    if (const char *result = ::inet_ntop(AF_INET, &m_client_endpoint.sin_addr, buffer.data(), buffer.size());
+        result == nullptr)
     {
         return std::unexpected(TcpConnectionError{
             .code = TcpConnectionErrorCode::ip_addr_conversion_failure,
@@ -97,7 +98,8 @@ std::expected<ReceiveResult, TcpConnectionError> TcpConnection::receive(std::spa
         });
     }
 
-    if (const auto bytes_received = ::recv(m_connected_client.get(), buffer.data(), buffer.size_bytes(), 0); bytes_received < 0)
+    if (const auto bytes_received = ::recv(m_connected_client.get(), buffer.data(), buffer.size_bytes(), 0);
+        bytes_received < 0)
     {
         // TODO: expand error handling
         return std::unexpected(TcpConnectionError{
