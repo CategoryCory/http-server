@@ -91,33 +91,43 @@ std::expected<void, TcpConnectionError> TcpConnection::send(const std::span<cons
 
 std::expected<ReceiveResult, TcpConnectionError> TcpConnection::receive(std::span<std::byte> buffer) const
 {
-    if (buffer.size_bytes() == 0)
+    if (buffer.empty())
     {
         return std::unexpected(TcpConnectionError{
             .code = TcpConnectionErrorCode::recv_no_buffer,
         });
     }
 
-    if (const auto bytes_received = ::recv(m_connected_client.get(), buffer.data(), buffer.size_bytes(), 0);
-        bytes_received < 0)
+    for (;;)
     {
-        // TODO: expand error handling
-        return std::unexpected(TcpConnectionError{
-            .code = TcpConnectionErrorCode::recv_general_failure,
-        });
-    }
-    else if (bytes_received == 0)
-    {
-        return ReceiveResult{
-            .status = ReceiveResultStatus::peer_closed,
-            .bytes_received = 0,
-        };
-    }
-    else
-    {
-        return ReceiveResult{
-            .status = ReceiveResultStatus::data_received,
-            .bytes_received = static_cast<std::size_t>(bytes_received),
-        };
+        if (const auto bytes_received = ::recv(m_connected_client.get(), buffer.data(), buffer.size_bytes(), 0);
+            bytes_received < 0)
+        {
+            // TODO: Expand error handling
+            switch (const auto error_code = errno)
+            {
+            case EINTR:
+                continue;
+            default:
+                return std::unexpected(TcpConnectionError{
+                    .code = TcpConnectionErrorCode::recv_general_failure,
+                    .error_code = {error_code, std::generic_category()},
+                });
+            }
+        }
+        else if (bytes_received == 0)
+        {
+            return ReceiveResult{
+                .status = ReceiveResultStatus::peer_closed,
+                .bytes_received = 0,
+            };
+        }
+        else
+        {
+            return ReceiveResult{
+                .status = ReceiveResultStatus::data_received,
+                .bytes_received = static_cast<std::size_t>(bytes_received),
+            };
+        }
     }
 }
