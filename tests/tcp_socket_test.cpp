@@ -6,6 +6,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+namespace http_server::tcp
+{
+
+using core::UniqueFileDescriptor;
+
 class TcpSocketInvalidPortTest : public testing::TestWithParam<int>
 {
 };
@@ -173,3 +178,5 @@ TEST(TcpSocketTest, AcceptingConnectionReturnsConnectedSocket)
     EXPECT_TRUE(connection.is_valid());
     EXPECT_GE(connection.get(), 0);
 }
+
+} // namespace http_server::tcp

@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <string>
 
+namespace http_server::config
+{
+
 /// @brief Error codes for configuration parsing and validation failures.
 enum class ConfigErrorCode
 {
@@ -39,3 +42,5 @@ struct ConfigError
     ///        Contains a parser diagnostic or validation detail.
     std::string diagnostic;
 };
+
+} // namespace http_server::config

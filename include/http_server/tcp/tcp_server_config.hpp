@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+namespace http_server::tcp
+{
+
 /// @brief Configuration structure for the TCP server
 struct TcpServerConfig
 {
@@ -11,3 +14,5 @@ struct TcpServerConfig
     /// @brief Maximum number of pending connections the server can have in its listen queue
     int max_backlog{};
 };
+
+} // namespace http_server::tcp

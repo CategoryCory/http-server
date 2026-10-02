@@ -8,6 +8,9 @@
 #include <cstdint>
 #include <expected>
 
+namespace http_server::tcp
+{
+
 /// @brief Represents the state of the TCP server.
 enum class TcpServerState : std::uint8_t
 {
@@ -52,3 +55,5 @@ private:
     TcpSocket m_socket{};
     TcpServerState m_state{TcpServerState::Stopped};
 };
+
+} // namespace http_server::tcp

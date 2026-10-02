@@ -1,5 +1,8 @@
 #pragma once
 
+namespace http_server::core
+{
+
 /// @brief RAII owner for a POSIX file descriptor.
 ///
 /// Ensures an owned descriptor is closed when this object is destroyed or
@@ -61,3 +64,5 @@ private:
     static constexpr int INVALID_FD = -1;
     int m_unique_fd = INVALID_FD;
 };
+
+} // namespace http_server::core

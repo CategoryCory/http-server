@@ -2,6 +2,9 @@
 
 #include <sys/socket.h>
 
+namespace http_server::tcp
+{
+
 #if defined(HTTP_SERVER_PLATFORM_LINUX)
 constexpr int TCP_SEND_FLAGS = MSG_NOSIGNAL;
 #elif defined(HTTP_SERVER_PLATFORM_MACOS)
@@ -23,3 +26,5 @@ inline bool configure_connected_socket(int fd)
 #error "Unsupported platform"
 #endif
 }
+
+} // namespace http_server::tcp

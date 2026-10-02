@@ -12,7 +12,10 @@
 #include <system_error>
 #include <utility>
 
-TcpSocket::TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state)
+namespace http_server::tcp
+{
+
+TcpSocket::TcpSocket(core::UniqueFileDescriptor &&socket_fd, TcpSocketState state)
     : m_socket_fd(std::move(socket_fd)),
       m_state(state)
 {
@@ -39,7 +42,7 @@ std::expected<void, SocketError> TcpSocket::initialize_socket()
         });
     }
 
-    UniqueFileDescriptor temp_fd{socket_fd};
+    core::UniqueFileDescriptor temp_fd{socket_fd};
 
     constexpr int option = 1;
     const int sockopt_result = ::setsockopt(temp_fd.get(), SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
@@ -133,7 +136,7 @@ std::expected<TcpConnection, SocketError> TcpSocket::accept_connection() const
         });
     }
 
-    UniqueFileDescriptor client_fd{fd};
+    core::UniqueFileDescriptor client_fd{fd};
 
     if (bool configure_result = configure_connected_socket(client_fd.get()); !configure_result)
     {
@@ -167,3 +170,5 @@ std::expected<void, SocketError> TcpSocket::require_socket_state(TcpSocketState 
 
     return {};
 }
+
+} // namespace http_server::tcp

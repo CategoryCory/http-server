@@ -7,6 +7,9 @@
 #include <filesystem>
 #include <string_view>
 
+namespace http_server::config
+{
+
 /// @brief Loads HTTP server configuration from a TOML file.
 class HttpServerConfigLoader
 {
@@ -35,3 +38,5 @@ private:
     HttpServerConfig m_config{};
     bool m_is_loaded{false};
 };
+
+} // namespace http_server::config

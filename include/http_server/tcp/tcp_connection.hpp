@@ -11,6 +11,9 @@
 #include <span>
 #include <string>
 
+namespace http_server::tcp
+{
+
 /// @brief Represents the result of a receive operation on a TCP connection.
 /// @details This structure contains the status of the receive operation and the number of bytes received.
 enum class ReceiveResultStatus : std::uint8_t
@@ -67,10 +70,12 @@ public:
     [[nodiscard]] int get() const noexcept { return m_connected_client.get(); }
 
 private:
-    TcpConnection(UniqueFileDescriptor fd, sockaddr_in ip_addr);
-    UniqueFileDescriptor m_connected_client{};
+    TcpConnection(core::UniqueFileDescriptor fd, sockaddr_in ip_addr);
+    core::UniqueFileDescriptor m_connected_client{};
     sockaddr_in m_client_endpoint{};
 
     friend class TcpSocket;
     friend class TcpConnectionTestFactory;
 };
+
+} // namespace http_server::tcp

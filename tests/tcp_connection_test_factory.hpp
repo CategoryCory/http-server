@@ -5,11 +5,16 @@
 
 #include <netinet/in.h>
 
+namespace http_server::tcp
+{
+
 class TcpConnectionTestFactory
 {
 public:
-    static TcpConnection create(UniqueFileDescriptor fd, sockaddr_in client_address)
+    static TcpConnection create(core::UniqueFileDescriptor fd, sockaddr_in client_address)
     {
         return TcpConnection(std::move(fd), client_address);
     }
 };
+
+} // namespace http_server::tcp

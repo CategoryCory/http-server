@@ -6,6 +6,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+namespace http_server::tcp
+{
+
+using core::UniqueFileDescriptor;
+
 TEST(TcpServerTest, StartWithEphemeralPortSucceeds)
 {
     TcpServer server;
@@ -110,3 +115,5 @@ TEST(TcpServerTest, StopAllowsServerToRestart)
     EXPECT_TRUE(server.start(config));
     EXPECT_TRUE(server.is_running());
 }
+
+} // namespace http_server::tcp

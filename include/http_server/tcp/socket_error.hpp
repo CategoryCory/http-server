@@ -4,6 +4,9 @@
 #include <string>
 #include <system_error>
 
+namespace http_server::tcp
+{
+
 /// @brief Error codes for socket-related failures.
 enum class SocketErrorCode : std::uint8_t
 {
@@ -33,3 +36,5 @@ struct SocketError
     ///        Describes the operation that failed or the invalid input or state.
     std::string diagnostic;
 };
+
+} // namespace http_server::tcp

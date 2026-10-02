@@ -6,6 +6,9 @@
 #include <stdexcept>
 #include <string_view>
 
+namespace http_server::config
+{
+
 namespace
 {
 class TemporaryConfigFile
@@ -150,3 +153,5 @@ TEST(HttpServerConfigLoaderTest, FailedReloadClearsPreviousConfiguration)
     EXPECT_EQ(config_loader.config().tcp_server.port, 0);
     EXPECT_EQ(config_loader.config().tcp_server.max_backlog, 0);
 }
+
+} // namespace http_server::config

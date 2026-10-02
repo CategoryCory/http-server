@@ -13,6 +13,11 @@
 #include <sys/socket.h>
 #include <utility>
 
+namespace http_server::tcp
+{
+
+using core::UniqueFileDescriptor;
+
 struct IpAddressTestCase
 {
     std::optional<std::string> input;
@@ -118,3 +123,5 @@ TEST(TcpConnectionTest, RetainsValidConnectedDescriptor)
     ASSERT_TRUE(connection.is_valid());
     EXPECT_GE(connection.get(), 0);
 }
+
+} // namespace http_server::tcp

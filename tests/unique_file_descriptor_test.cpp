@@ -8,6 +8,9 @@
 #include <unistd.h>
 #include <utility>
 
+namespace http_server::core
+{
+
 namespace
 {
 int create_file_descriptor()
@@ -194,3 +197,5 @@ TEST(UniqueFileDescriptorTest, SelfMoveAssignmentPreservesDescriptor)
     EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
 } // namespace
+
+} // namespace http_server::core

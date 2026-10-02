@@ -5,6 +5,9 @@
 #include <cstdint>
 #include <optional>
 
+namespace http_server::tcp
+{
+
 /// @brief Error codes for HTTP server failures.
 enum class ServerErrorCode : std::uint8_t
 {
@@ -28,3 +31,5 @@ struct ServerError
     /// @brief The socket error that caused the failure, when @ref code is socket_failure.
     std::optional<SocketError> socket_error;
 };
+
+} // namespace http_server::tcp

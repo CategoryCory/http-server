@@ -4,6 +4,9 @@
 #include <unistd.h>
 #include <utility>
 
+namespace http_server::core
+{
+
 UniqueFileDescriptor::UniqueFileDescriptor(int fd)
 {
     if (fd < INVALID_FD)
@@ -79,3 +82,5 @@ UniqueFileDescriptor::operator bool() const noexcept
 {
     return is_valid();
 }
+
+} // namespace http_server::core

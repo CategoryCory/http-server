@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <system_error>
 
+namespace http_server::tcp
+{
+
 /// @brief Error codes for TCP connection failures.
 enum class TcpConnectionErrorCode : std::uint8_t
 {
@@ -34,3 +37,5 @@ struct TcpConnectionError
     /// @brief The underlying system error code, if applicable.
     std::error_code error_code{};
 };
+
+} // namespace http_server::tcp

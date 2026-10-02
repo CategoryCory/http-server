@@ -8,6 +8,9 @@
 #include <expected>
 #include <netinet/in.h>
 
+namespace http_server::tcp
+{
+
 /// @brief Describes the outcome of a future connection operation.
 /// @note This type is not used by the current API.
 enum class ConnectionResult : std::uint8_t
@@ -86,9 +89,11 @@ public:
 
 private:
     // TODO: Do we still need this constructor?
-    TcpSocket(UniqueFileDescriptor &&socket_fd, TcpSocketState state);
-    UniqueFileDescriptor m_socket_fd{};
+    TcpSocket(core::UniqueFileDescriptor &&socket_fd, TcpSocketState state);
+    core::UniqueFileDescriptor m_socket_fd{};
     sockaddr_in m_addr{};
     TcpSocketState m_state{TcpSocketState::Uninitialized};
     [[nodiscard]] std::expected<void, SocketError> require_socket_state(TcpSocketState required_state) const;
 };
+
+} // namespace http_server::tcp

@@ -8,6 +8,11 @@
 
 namespace fs = std::filesystem;
 
+using http_server::config::HttpServerConfigLoader;
+using http_server::tcp::ServerError;
+using http_server::tcp::ServerErrorCode;
+using http_server::tcp::TcpServer;
+
 static void test_start_twice();
 
 static void test_accept_before_start();

@@ -4,6 +4,9 @@
 #include <optional>
 #include <utility>
 
+namespace http_server::tcp
+{
+
 std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_config)
 {
     if (m_state == TcpServerState::Running)
@@ -65,3 +68,5 @@ void TcpServer::stop() noexcept
         m_state = TcpServerState::Stopped;
     }
 }
+
+} // namespace http_server::tcp

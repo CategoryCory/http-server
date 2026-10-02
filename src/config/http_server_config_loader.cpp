@@ -8,6 +8,9 @@
 #include <toml++/toml.hpp>
 #include <utility>
 
+namespace http_server::config
+{
+
 std::expected<void, ConfigError> HttpServerConfigLoader::load()
 {
     return load(std::filesystem::path{DEFAULT_CONFIG_PATH});
@@ -103,3 +106,5 @@ std::expected<void, ConfigError> HttpServerConfigLoader::load(const std::filesys
     m_is_loaded = true;
     return {};
 }
+
+} // namespace http_server::config
