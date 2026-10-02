@@ -1,6 +1,6 @@
 #pragma once
 
-#include <http/socket_error.hpp>
+#include <http_server/tcp/socket_error.hpp>
 
 #include <cstdint>
 #include <optional>

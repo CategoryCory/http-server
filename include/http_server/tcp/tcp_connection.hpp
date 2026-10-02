@@ -1,7 +1,7 @@
 #pragma once
 
-#include <http/tcp_connection_error.hpp>
-#include <http/unique_file_descriptor.hpp>
+#include <http_server/core/unique_file_descriptor.hpp>
+#include <http_server/tcp/tcp_connection_error.hpp>
 
 #include <arpa/inet.h>
 #include <cstddef>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <config/tcp_server_config.hpp>
-#include <http/server_error.hpp>
-#include <http/tcp_connection.hpp>
-#include <http/tcp_socket.hpp>
+#include <http_server/tcp/server_error.hpp>
+#include <http_server/tcp/tcp_connection.hpp>
+#include <http_server/tcp/tcp_server_config.hpp>
+#include <http_server/tcp/tcp_socket.hpp>
 
 #include <cstdint>
 #include <expected>

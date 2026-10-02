@@ -1,8 +1,8 @@
 #pragma once
 
-#include <http/socket_error.hpp>
-#include <http/tcp_connection.hpp>
-#include <http/unique_file_descriptor.hpp>
+#include <http_server/core/unique_file_descriptor.hpp>
+#include <http_server/tcp/socket_error.hpp>
+#include <http_server/tcp/tcp_connection.hpp>
 
 #include <cstdint>
 #include <expected>

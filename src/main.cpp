@@ -1,6 +1,6 @@
-#include <config/http_server_config_loader.hpp>
-#include <http/server_error.hpp>
-#include <http/tcp_server.hpp>
+#include <http_server/config/http_server_config_loader.hpp>
+#include <http_server/tcp/server_error.hpp>
+#include <http_server/tcp/tcp_server.hpp>
 
 #include <filesystem>
 #include <iostream>

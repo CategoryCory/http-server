@@ -1,5 +1,5 @@
-#include <http/tcp_socket.hpp>
-#include <http/unique_file_descriptor.hpp>
+#include <http_server/core/unique_file_descriptor.hpp>
+#include <http_server/tcp/tcp_socket.hpp>
 
 #include <arpa/inet.h>
 #include <gtest/gtest.h>

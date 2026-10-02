@@ -1,7 +1,7 @@
 #pragma once
 
-#include <config/config_error.hpp>
-#include <config/http_server_config.hpp>
+#include <http_server/config/config_error.hpp>
+#include <http_server/config/http_server_config.hpp>
 
 #include <expected>
 #include <filesystem>

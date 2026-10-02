@@ -1,7 +1,7 @@
-#include <http/platform.hpp>
-#include <http/tcp_connection.hpp>
-#include <http/tcp_connection_error.hpp>
-#include <http/unique_file_descriptor.hpp>
+#include <http_server/core/unique_file_descriptor.hpp>
+#include <http_server/tcp/platform.hpp>
+#include <http_server/tcp/tcp_connection.hpp>
+#include <http_server/tcp/tcp_connection_error.hpp>
 
 #include <arpa/inet.h>
 #include <array>
@@ -50,7 +50,7 @@ std::expected<void, TcpConnectionError> TcpConnection::send(std::span<const std:
         const auto data_remaining = data.last(data.size_bytes() - total_bytes_sent);
 
         const auto bytes_sent =
-                ::send(m_connected_client.get(), data_remaining.data(), data_remaining.size_bytes(), TCP_SEND_FLAGS);
+            ::send(m_connected_client.get(), data_remaining.data(), data_remaining.size_bytes(), TCP_SEND_FLAGS);
 
         if (bytes_sent < 0)
         {
