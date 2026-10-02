@@ -205,8 +205,33 @@ After configuring the Debug preset, run clang-tidy against the compilation
 database:
 
 ```sh
-clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp
+find src tests -type f -name '*.cpp' -exec clang-tidy -p build/debug --config-file=.clang-tidy {} +
 ```
+
+## Project Structure
+
+The code is organized into layers. Each layer has its own directory under
+`include/http_server/`, `src/`, and `tests/`, its own namespace, and its own CMake
+library and test executable. A layer depends only on the layers below it.
+
+| Layer    | Namespace            | CMake target          | Purpose                                                  |
+| -------- | -------------------- | --------------------- | -------------------------------------------------------- |
+| `core`   | `http_server::core`  | `http_server::core`   | Foundational utilities, such as RAII file descriptors.   |
+| `tcp`    | `http_server::tcp`   | `http_server::tcp`    | POSIX sockets, the TCP server, and client connections.   |
+| `config` | `http_server::config`| `http_server::config` | TOML configuration loading and validation.               |
+
+Dependencies flow `config` → `tcp` → `core`. HTTP-specific code will be added as
+a separate `http` layer on top of `tcp`.
+
+```text
+include/http_server/{core,tcp,config}/   public headers
+src/{core,tcp,config}/                   implementations and private headers
+tests/{core,tcp,config}/                 unit and loopback tests
+tests/support/                           shared test helpers
+```
+
+Include project headers with the `http_server/` prefix, for example
+`#include <http_server/tcp/tcp_server.hpp>`.
 
 ## Roadmap
 

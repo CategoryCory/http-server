@@ -42,7 +42,7 @@
   },
   {
     "label": "Run clang-tidy",
-    "command": "cmake --preset debug && cmake --build --preset debug && clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp",
+    "command": "cmake --preset debug && cmake --build --preset debug && find src tests -type f -name '*.cpp' -exec clang-tidy -p build/debug --config-file=.clang-tidy {} +",
     "save": "all"
   },
   {
