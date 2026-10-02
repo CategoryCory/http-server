@@ -41,17 +41,18 @@ std::uint16_t TcpConnection::get_client_port() const
     return ntohs(m_client_endpoint.sin_port);
 }
 
-std::expected<void, TcpConnectionError> TcpConnection::send(const std::span<const std::byte> data) const
+std::expected<void, TcpConnectionError> TcpConnection::send(std::span<const std::byte> data) const
 {
     std::size_t total_bytes_sent = 0;
 
     while (total_bytes_sent < data.size_bytes())
     {
-        auto data_remaining = data.last(data.size_bytes() - total_bytes_sent);
+        const auto data_remaining = data.last(data.size_bytes() - total_bytes_sent);
 
-        if (const auto bytes_sent =
+        const auto bytes_sent =
                 ::send(m_connected_client.get(), data_remaining.data(), data_remaining.size_bytes(), TCP_SEND_FLAGS);
-            bytes_sent < 0)
+
+        if (bytes_sent < 0)
         {
             // TODO: Add ECONNRESET and ENOTCONN
             switch (const int error_code = errno)
@@ -74,16 +75,15 @@ std::expected<void, TcpConnectionError> TcpConnection::send(const std::span<cons
                 });
             }
         }
-        else if (bytes_sent == 0)
+
+        if (bytes_sent == 0)
         {
             return std::unexpected(TcpConnectionError{
                 .code = TcpConnectionErrorCode::send_no_progress,
             });
         }
-        else
-        {
-            total_bytes_sent += static_cast<std::size_t>(bytes_sent);
-        }
+
+        total_bytes_sent += static_cast<std::size_t>(bytes_sent);
     }
 
     return {};
@@ -100,8 +100,9 @@ std::expected<ReceiveResult, TcpConnectionError> TcpConnection::receive(std::spa
 
     for (;;)
     {
-        if (const auto bytes_received = ::recv(m_connected_client.get(), buffer.data(), buffer.size_bytes(), 0);
-            bytes_received < 0)
+        const auto bytes_received = ::recv(m_connected_client.get(), buffer.data(), buffer.size_bytes(), 0);
+
+        if (bytes_received < 0)
         {
             // TODO: Expand error handling
             switch (const auto error_code = errno)
@@ -115,19 +116,18 @@ std::expected<ReceiveResult, TcpConnectionError> TcpConnection::receive(std::spa
                 });
             }
         }
-        else if (bytes_received == 0)
+
+        if (bytes_received == 0)
         {
             return ReceiveResult{
                 .status = ReceiveResultStatus::peer_closed,
                 .bytes_received = 0,
             };
         }
-        else
-        {
-            return ReceiveResult{
-                .status = ReceiveResultStatus::data_received,
-                .bytes_received = static_cast<std::size_t>(bytes_received),
-            };
-        }
+
+        return ReceiveResult{
+            .status = ReceiveResultStatus::data_received,
+            .bytes_received = static_cast<std::size_t>(bytes_received),
+        };
     }
 }
