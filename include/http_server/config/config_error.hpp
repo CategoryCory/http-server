@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -7,7 +8,7 @@ namespace http_server::config
 {
 
 /// @brief Error codes for configuration parsing and validation failures.
-enum class ConfigErrorCode
+enum class ConfigErrorCode : std::uint8_t
 {
     /// @brief Failed to parse the configuration file.
     parse_failure,

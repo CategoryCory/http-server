@@ -68,6 +68,7 @@ TEST(TcpServerTest, StartWithBoundPortReturnsSocketFailure)
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error().code, ServerErrorCode::socket_failure);
     ASSERT_TRUE(result.error().socket_error.has_value());
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access): guarded by the preceding ASSERT_TRUE.
     EXPECT_EQ(result.error().socket_error->code, SocketErrorCode::system_error);
 }
 

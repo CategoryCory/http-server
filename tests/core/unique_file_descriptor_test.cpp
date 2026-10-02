@@ -152,7 +152,7 @@ TEST(UniqueFileDescriptorTest, MoveConstructionFromEmptyDescriptorRemainsEmpty)
 
     EXPECT_FALSE(destination.is_valid());
     EXPECT_EQ(destination.get(), -1);
-    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the documented moved-from state.
+    // NOLINTNEXTLINE(bugprone-use-after-move,clang-analyzer-cplusplus.Move): verifies the documented moved-from state.
     EXPECT_FALSE(source.is_valid());
 }
 
@@ -165,7 +165,7 @@ TEST(UniqueFileDescriptorTest, MoveConstructionTransfersOwnership)
 
     EXPECT_EQ(destination.get(), fd);
     EXPECT_TRUE(destination.is_valid());
-    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the documented moved-from state.
+    // NOLINTNEXTLINE(bugprone-use-after-move,clang-analyzer-cplusplus.Move): verifies the documented moved-from state.
     EXPECT_FALSE(source.is_valid());
 }
 
@@ -180,7 +180,7 @@ TEST(UniqueFileDescriptorTest, MoveAssignmentReleasesPreviousDescriptor)
 
     EXPECT_TRUE(is_closed(destination_fd));
     EXPECT_EQ(destination.get(), source_fd);
-    // NOLINTNEXTLINE(bugprone-use-after-move): verifies the documented moved-from state.
+    // NOLINTNEXTLINE(bugprone-use-after-move,clang-analyzer-cplusplus.Move): verifies the documented moved-from state.
     EXPECT_FALSE(source.is_valid());
 }
 

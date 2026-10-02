@@ -2,6 +2,7 @@
 #include <http_server/tcp/server_error.hpp>
 #include <http_server/tcp/tcp_server.hpp>
 
+#include <exception>
 #include <filesystem>
 #include <iostream>
 #include <string_view>
@@ -35,7 +36,7 @@ static std::string_view diagnostic(const ServerError &error)
     return "Unknown server error";
 }
 
-int main(int argument_count, char *arguments[])
+static int run(int argument_count, char *arguments[])
 {
     fs::path config_path{HttpServerConfigLoader::DEFAULT_CONFIG_PATH};
 
@@ -50,6 +51,19 @@ int main(int argument_count, char *arguments[])
     }
 
     return run_server(config_path);
+}
+
+int main(int argument_count, char *arguments[])
+{
+    try
+    {
+        return run(argument_count, arguments);
+    }
+    catch (const std::exception &exception)
+    {
+        std::cerr << "Unexpected error: " << exception.what() << "\n";
+        return 1;
+    }
 }
 
 int run_server(const fs::path &config_path)
