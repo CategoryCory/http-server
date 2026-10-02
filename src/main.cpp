@@ -13,11 +13,7 @@ using http_server::tcp::ServerError;
 using http_server::tcp::ServerErrorCode;
 using http_server::tcp::TcpServer;
 
-static void test_start_twice();
-
-static void test_accept_before_start();
-
-static int test_full_lifecycle(const fs::path &config_path);
+static int run_server(const fs::path &config_path);
 
 static std::string_view diagnostic(const ServerError &error)
 {
@@ -41,9 +37,6 @@ static std::string_view diagnostic(const ServerError &error)
 
 int main(int argument_count, char *arguments[])
 {
-    test_start_twice();
-    test_accept_before_start();
-
     fs::path config_path{HttpServerConfigLoader::DEFAULT_CONFIG_PATH};
 
     if (argument_count == 3 && std::string_view{arguments[1]} == "--config")
@@ -56,39 +49,10 @@ int main(int argument_count, char *arguments[])
         return 1;
     }
 
-    return test_full_lifecycle(config_path);
+    return run_server(config_path);
 }
 
-void test_start_twice()
-{
-    TcpServer server;
-
-    if (const auto first_start_result = server.start({}); !first_start_result)
-    {
-        std::cerr << "Failed to start server the first time: " << diagnostic(first_start_result.error()) << "\n";
-        return;
-    }
-
-    if (const auto second_start_result = server.start({}); !second_start_result)
-    {
-        std::cerr << "Failed to start server the second time: " << diagnostic(second_start_result.error()) << "\n";
-    }
-
-    server.stop();
-}
-
-void test_accept_before_start()
-{
-    TcpServer server;
-
-    if (const auto accept_result = server.accept_connection(); !accept_result)
-    {
-        std::cerr << "Failed to accept connection before starting server: " << diagnostic(accept_result.error())
-                  << "\n";
-    }
-}
-
-int test_full_lifecycle(const fs::path &config_path)
+int run_server(const fs::path &config_path)
 {
     HttpServerConfigLoader config_loader;
 
