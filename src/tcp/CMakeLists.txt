@@ -1,0 +1,10 @@
+add_http_server_layer(
+    tcp
+    SOURCES
+    platform.cpp
+    tcp_connection.cpp
+    tcp_server.cpp
+    tcp_socket.cpp
+    LINK_LIBRARIES
+    http_server::core
+)

@@ -70,7 +70,7 @@
         {
             "label": "Run clang-tidy",
             "type": "shell",
-            "command": "clang-tidy -p build/debug --config-file=.clang-tidy src/*.cpp tests/*.cpp",
+            "command": "find src tests -type f -name '*.cpp' -exec clang-tidy -p build/debug --config-file=.clang-tidy {} +",
             "dependsOn": "Build debug",
             "dependsOrder": "sequence",
             "problemMatcher": "$gcc"

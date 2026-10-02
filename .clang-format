@@ -37,7 +37,7 @@ PackConstructorInitializers: Never
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '^[<"](config|http)/'
+  - Regex: '^[<"]http_server/'
     Priority: 0
     CaseSensitive: true
 

@@ -1,53 +1,28 @@
-add_library(
-    http_server_lib
-    http_server_config_loader.cpp
-    tcp_connection.cpp
-    tcp_server.cpp
-    tcp_socket.cpp
-    unique_file_descriptor.cpp
-)
+# Defines the library for one layer as http_server_<layer> with the alias
+# http_server::<layer>. Layers declare only the layers below them as dependencies.
+function(add_http_server_layer layer)
+    cmake_parse_arguments(PARSE_ARGV 1 ARG "" "" "SOURCES;LINK_LIBRARIES")
 
-target_compile_definitions(
-    http_server_lib
-    PRIVATE
-    $<$<PLATFORM_ID:Darwin>:HTTP_SERVER_PLATFORM_MACOS>
-    $<$<PLATFORM_ID:Linux>:HTTP_SERVER_PLATFORM_LINUX>
-)
+    set(target http_server_${layer})
 
-add_library(
-    http_server::lib
-    ALIAS http_server_lib
-)
+    add_library(${target} ${ARG_SOURCES})
+    add_library(http_server::${layer} ALIAS ${target})
 
-find_package(tomlplusplus CONFIG REQUIRED)
+    target_include_directories(${target} PUBLIC "${PROJECT_SOURCE_DIR}/include")
+    target_compile_features(${target} PUBLIC cxx_std_23)
 
-target_include_directories(
-    http_server_lib
-    PUBLIC
-    "${PROJECT_SOURCE_DIR}/include"
-)
+    if(ARG_LINK_LIBRARIES)
+        target_link_libraries(${target} PUBLIC ${ARG_LINK_LIBRARIES})
+    endif()
 
-target_compile_features(
-    http_server_lib
-    PUBLIC
-    cxx_std_23
-)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(${target} PUBLIC -Wall -Wextra -Wpedantic)
+    endif()
+endfunction()
 
-target_link_libraries(
-    http_server_lib
-    PUBLIC
-    tomlplusplus::tomlplusplus
-)
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(
-        http_server_lib
-        PUBLIC
-        -Wall
-        -Wextra
-        -Wpedantic
-    )
-endif()
+add_subdirectory(core)
+add_subdirectory(tcp)
+add_subdirectory(config)
 
 add_executable(
     http_server
@@ -63,7 +38,8 @@ target_compile_features(
 target_link_libraries(
     http_server
     PRIVATE
-    http_server::lib
+    http_server::config
+    http_server::tcp
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
