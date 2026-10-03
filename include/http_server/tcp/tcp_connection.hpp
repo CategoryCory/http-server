@@ -70,7 +70,7 @@ public:
     [[nodiscard]] int get() const noexcept { return m_connected_client.get(); }
 
 private:
-    TcpConnection(core::UniqueFileDescriptor fd, sockaddr_in ip_addr);
+    TcpConnection(core::UniqueFileDescriptor &&fd, sockaddr_in ip_addr);
     core::UniqueFileDescriptor m_connected_client{};
     sockaddr_in m_client_endpoint{};
 
