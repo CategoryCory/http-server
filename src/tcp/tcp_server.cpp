@@ -20,7 +20,7 @@ std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_
     }
 
     return TcpListener::create(server_config.port, server_config.max_backlog)
-        .transform([&](TcpListener listener) { m_listener = std::move(listener); })
+        .transform([this](TcpListener listener) { m_listener = std::move(listener); })
         .transform_error(
             [](SocketError socket_error)
             {
