@@ -10,8 +10,8 @@ namespace http_server::tcp
 TEST(TcpListenerTest, AvailablePortReturnsListener)
 {
     // Arrange
-    const std::uint16_t port{1234};
-    const int max_backlog{5};
+    constexpr std::uint16_t port{1234};
+    constexpr int max_backlog{5};
 
     // Act
     const auto listener = TcpListener::create(port, max_backlog);
@@ -23,8 +23,8 @@ TEST(TcpListenerTest, AvailablePortReturnsListener)
 TEST(TcpListenerTest, InUsePortReturnsError)
 {
     // Arrange
-    const std::uint16_t port{1234};
-    const int max_backlog{5};
+    constexpr std::uint16_t port{1234};
+    constexpr int max_backlog{5};
 
     const auto first = TcpListener::create(port, max_backlog);
     ASSERT_TRUE(first);
@@ -41,8 +41,8 @@ TEST(TcpListenerTest, InUsePortReturnsError)
 TEST(TcpListenerTest, DestroyingListenerFreesSocket)
 {
     // Arrange
-    const std::uint16_t port{1234};
-    const int max_backlog{5};
+    constexpr std::uint16_t port{1234};
+    constexpr int max_backlog{5};
 
     {
         const auto first = TcpListener::create(port, max_backlog);
