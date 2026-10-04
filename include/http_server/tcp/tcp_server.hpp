@@ -2,24 +2,15 @@
 
 #include <http_server/tcp/server_error.hpp>
 #include <http_server/tcp/tcp_connection.hpp>
+#include <http_server/tcp/tcp_listener.hpp>
 #include <http_server/tcp/tcp_server_config.hpp>
 #include <http_server/tcp/tcp_socket.hpp>
 
-#include <cstdint>
 #include <expected>
+#include <optional>
 
 namespace http_server::tcp
 {
-
-/// @brief Represents the state of the TCP server.
-enum class TcpServerState : std::uint8_t
-{
-    /// @brief The server is stopped and not currently running.
-    Stopped,
-
-    /// @brief The server is currently running and accepting connections.
-    Running
-};
 
 /// @brief A TCP server that listens for incoming client connections
 ///
@@ -45,15 +36,13 @@ public:
 
     /// @brief Checks if the TCP server is currently running.
     /// @return true if the server is running; otherwise false.
-    [[nodiscard]] bool is_running() const noexcept { return m_state == TcpServerState::Running; }
+    [[nodiscard]] bool is_running() const noexcept { return m_listener.has_value(); }
 
     /// @brief Stops the TCP server.
     void stop() noexcept;
 
 private:
-    /// @brief TCP socket for the server
-    TcpSocket m_socket{};
-    TcpServerState m_state{TcpServerState::Stopped};
+    std::optional<TcpListener> m_listener;
 };
 
 } // namespace http_server::tcp

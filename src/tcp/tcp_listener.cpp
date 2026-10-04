@@ -1,6 +1,7 @@
+#include <http_server/tcp/tcp_listener.hpp>
+
 #include <http_server/core/unique_file_descriptor.hpp>
 #include <http_server/tcp/socket_error.hpp>
-#include <http_server/tcp/tcp_listener.hpp>
 
 #include "platform.hpp"
 
