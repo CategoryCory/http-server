@@ -74,7 +74,6 @@ private:
     core::UniqueFileDescriptor m_connected_client{};
     sockaddr_in m_client_endpoint{};
 
-    friend class TcpSocket;
     friend class TcpListener;
     friend class TcpConnectionTestFactory;
 };

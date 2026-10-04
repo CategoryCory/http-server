@@ -4,7 +4,6 @@
 #include <http_server/tcp/tcp_connection.hpp>
 #include <http_server/tcp/tcp_listener.hpp>
 #include <http_server/tcp/tcp_server_config.hpp>
-#include <http_server/tcp/tcp_socket.hpp>
 
 #include <expected>
 #include <optional>
