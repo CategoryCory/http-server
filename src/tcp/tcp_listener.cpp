@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <expected>
 #include <netinet/in.h>
+#include <string>
+#include <string_view>
 #include <sys/socket.h>
 #include <system_error>
 #include <utility>
@@ -17,30 +19,33 @@ namespace http_server::tcp
 {
 namespace
 {
+[[nodiscard]] std::unexpected<SocketError> make_system_socket_error(int error, std::string_view diagnostic)
+{
+    return std::unexpected(SocketError{
+        .code = SocketErrorCode::system_error,
+        .error_code = {error, std::generic_category()},
+        .diagnostic = std::string(diagnostic),
+    });
+}
+
 [[nodiscard]] std::expected<core::UniqueFileDescriptor, SocketError> initialize_socket()
 {
     const auto socket_fd = ::socket(AF_INET, SOCK_STREAM, 0);
 
     if (socket_fd < 0)
     {
-        return std::unexpected(SocketError{
-            .code = SocketErrorCode::system_error,
-            .error_code = {errno, std::generic_category()},
-            .diagnostic = "Failed to create socket",
-        });
+        const auto error = errno;
+        return make_system_socket_error(error, "Failed to create socket");
     }
 
     core::UniqueFileDescriptor fd{socket_fd};
 
     constexpr int option = 1;
-    const int sockopt_result = ::setsockopt(fd.get(), SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
-    if (sockopt_result < 0)
+    if (const int sockopt_result = ::setsockopt(fd.get(), SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+        sockopt_result < 0)
     {
-        return std::unexpected(SocketError{
-            .code = SocketErrorCode::system_error,
-            .error_code = {errno, std::generic_category()},
-            .diagnostic = "Failed to set socket options",
-        });
+        const auto error = errno;
+        return make_system_socket_error(error, "Failed to set socket options");
     }
 
     return fd;
@@ -56,11 +61,8 @@ namespace
 
     if (::bind(fd.get(), reinterpret_cast<const sockaddr *>(&addr), sizeof(addr)) < 0)
     {
-        return std::unexpected(SocketError{
-            .code = SocketErrorCode::system_error,
-            .error_code = {errno, std::generic_category()},
-            .diagnostic = "Failed to bind socket",
-        });
+        const auto error = errno;
+        return make_system_socket_error(error, "Failed to bind socket");
     }
 
     return {};
@@ -71,11 +73,8 @@ namespace
 {
     if (::listen(fd.get(), max_backlog) < 0)
     {
-        return std::unexpected(SocketError{
-            .code = SocketErrorCode::system_error,
-            .error_code = {errno, std::generic_category()},
-            .diagnostic = "Failed to listen for connections",
-        });
+        const auto error = errno;
+        return make_system_socket_error(error, "Failed to listen for connections");
     }
 
     return {};
@@ -108,11 +107,8 @@ std::expected<TcpConnection, SocketError> TcpListener::accept_connection() const
 
     if (fd < 0)
     {
-        return std::unexpected(SocketError{
-            .code = SocketErrorCode::system_error,
-            .error_code = {errno, std::generic_category()},
-            .diagnostic = "Failed to accept connection",
-        });
+        const auto error = errno;
+        return make_system_socket_error(error, "Failed to accept connection");
     }
 
     core::UniqueFileDescriptor client_fd{fd};
