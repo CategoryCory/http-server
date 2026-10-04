@@ -1,6 +1,5 @@
-#include <http_server/tcp/tcp_server.hpp>
-
 #include <http_server/tcp/tcp_listener.hpp>
+#include <http_server/tcp/tcp_server.hpp>
 
 #include <expected>
 #include <optional>
@@ -20,15 +19,15 @@ std::expected<void, ServerError> TcpServer::start(const TcpServerConfig &server_
     }
 
     return TcpListener::create(server_config.port, server_config.max_backlog)
-        .transform([&](TcpListener listener) {
-            m_listener = std::move(listener);
-        })
-        .transform_error([](SocketError socket_error) {
-            return ServerError{
-                .code = ServerErrorCode::socket_failure,
-                .socket_error = std::move(socket_error),
-            };
-        });
+        .transform([&](TcpListener listener) { m_listener = std::move(listener); })
+        .transform_error(
+            [](SocketError socket_error)
+            {
+                return ServerError{
+                    .code = ServerErrorCode::socket_failure,
+                    .socket_error = std::move(socket_error),
+                };
+            });
 }
 
 std::expected<TcpConnection, ServerError> TcpServer::accept_connection() const

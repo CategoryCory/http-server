@@ -55,4 +55,4 @@ TEST(TcpListenerTest, DestroyingListenerFreesSocket)
     // Assert
     ASSERT_TRUE(second);
 }
-}
+} // namespace http_server::tcp
