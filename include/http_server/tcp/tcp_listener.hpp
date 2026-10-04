@@ -10,22 +10,26 @@
 namespace http_server::tcp
 {
 
-/// @brief TCP listener for incoming connections
+/// @brief Listens for incoming TCP connections.
+///
+/// Owns a listening socket that is closed when the listener is destroyed or closed.
 class TcpListener
 {
 public:
-    /// @brief Creates an instance of TcpListener
-    /// @param port Port to listen on
-    /// @param max_backlog Max pending connections
-    /// @return `std::expected<TcpListener, SocketError>` containing the listener or error
+    /// @brief Creates a listener bound to a port on all local IPv4 interfaces.
+    /// @param port The port to listen on.
+    /// @param max_backlog The maximum number of pending connections in the listen queue.
+    /// @return A std::expected containing the TcpListener on success; otherwise an unexpected SocketError.
     [[nodiscard]] static std::expected<TcpListener, SocketError> create(std::uint16_t port, int max_backlog);
 
-    /// @brief Accepts an incoming TCP connection
-    /// @return `std::expected<TcpConnection, SocketError>` containing the connection or error
+    /// @brief Accepts an incoming TCP connection.
+    ///
+    /// Blocks until a client connects or an error occurs.
+    /// @return A std::expected containing the TcpConnection on success; otherwise an unexpected SocketError.
     [[nodiscard]] std::expected<TcpConnection, SocketError> accept_connection() const;
 
-    /// @brief Closes the TCP listener
-    /// @note After calling this, the listener cannot accept new connections
+    /// @brief Closes the listening socket.
+    /// @note After calling this, the listener cannot accept new connections.
     void close() noexcept;
 
 private:

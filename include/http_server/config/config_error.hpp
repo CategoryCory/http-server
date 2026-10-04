@@ -19,14 +19,14 @@ enum class ConfigErrorCode : std::uint8_t
     /// @brief A configuration value is invalid.
     invalid_value,
 
-    /// @brief A configuration value is out of the allowed range.
+    /// @brief A configuration value is outside the allowed range.
     value_out_of_range,
 
     /// @brief An unknown error occurred while processing the configuration.
     unknown_error,
 };
 
-/// @brief Represents an error encountered during configuration parsing or validation.
+/// @brief An error encountered during configuration parsing or validation.
 struct ConfigError
 {
     /// @brief The error code indicating the type of configuration error.
@@ -35,12 +35,14 @@ struct ConfigError
     /// @brief The path to the configuration file associated with the error.
     std::filesystem::path config_path;
 
-    /// @brief The specific configuration key associated with the error.
-    ///        Empty for whole-file parse failures.
+    /// @brief The configuration key associated with the error.
+    ///
+    /// Empty for whole-file parse failures.
     std::string key;
 
-    /// @brief A diagnostic message providing additional details about the error.
-    ///        Contains a parser diagnostic or validation detail.
+    /// @brief A diagnostic message with additional details about the error.
+    ///
+    /// Contains a parser diagnostic or a validation detail.
     std::string diagnostic;
 };
 
