@@ -2,6 +2,8 @@
 #include <http_server/tcp/socket_error.hpp>
 #include <http_server/tcp/tcp_listener.hpp>
 
+#include "platform.hpp"
+
 #include <arpa/inet.h>
 #include <cerrno>
 #include <cstdint>
@@ -94,5 +96,41 @@ std::expected<TcpListener, SocketError> TcpListener::create(std::uint16_t port, 
                 .and_then([&fd, max_backlog] { return listen_for_connections(fd, max_backlog); })
                 .transform([&fd]() noexcept { return TcpListener{std::move(fd)}; });
         });
+}
+
+std::expected<TcpConnection, SocketError> TcpListener::accept_connection() const
+{
+    sockaddr_in client_addr{};
+    socklen_t client_addr_len = sizeof(client_addr);
+    const int fd = ::accept(m_fd.get(), reinterpret_cast<sockaddr *>(&client_addr), &client_addr_len);
+
+    // TODO: Handle EINTR, EAGAIN, and other recoverable errors during accept()
+
+    if (fd < 0)
+    {
+        return std::unexpected(SocketError{
+            .code = SocketErrorCode::system_error,
+            .error_code = {errno, std::generic_category()},
+            .diagnostic = "Failed to accept connection",
+        });
+    }
+
+    core::UniqueFileDescriptor client_fd{fd};
+
+    if (bool configure_result = configure_connected_socket(client_fd.get()); !configure_result)
+    {
+        return std::unexpected(SocketError{.code = SocketErrorCode::configuration_error,
+                                           .diagnostic = "Error occurred when configuring socket"});
+    }
+
+    return TcpConnection(std::move(client_fd), client_addr);
+}
+
+void TcpListener::close() noexcept
+{
+    if (m_fd.is_valid())
+    {
+        m_fd.reset();
+    }
 }
 } // namespace http_server::tcp
