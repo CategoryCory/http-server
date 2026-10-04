@@ -36,10 +36,19 @@ PackConstructorInitializers: Never
 # Includes
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
+MainIncludeChar: AngleBracket
+IncludeIsMainRegex: '$'
+
 IncludeCategories:
   - Regex: '^[<"]http_server/'
-    Priority: 0
+    Priority: 1
     CaseSensitive: true
+
+  - Regex: '^"'
+    Priority: 2
+
+  - Regex: '^<'
+    Priority: 3
 
 # Namespaces
 NamespaceIndentation: None

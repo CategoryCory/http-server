@@ -1,5 +1,6 @@
-#include <http_server/tcp/tcp_listener.hpp>
 #include <http_server/tcp/tcp_server.hpp>
+
+#include <http_server/tcp/tcp_listener.hpp>
 
 #include <expected>
 #include <optional>
