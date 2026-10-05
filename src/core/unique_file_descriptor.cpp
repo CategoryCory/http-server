@@ -1,5 +1,7 @@
 #include <http_server/core/unique_file_descriptor.hpp>
 
+#include <cassert>
+#include <cerrno>
 #include <stdexcept>
 #include <unistd.h>
 #include <utility>
@@ -39,28 +41,20 @@ UniqueFileDescriptor::~UniqueFileDescriptor()
 
 void UniqueFileDescriptor::reset() noexcept
 {
+    const auto original_error = errno;
+
     if (m_unique_fd != INVALID_FD)
     {
-        close(m_unique_fd);
-        m_unique_fd = INVALID_FD;
-    }
-}
+        const auto fd_to_close = std::exchange(m_unique_fd, INVALID_FD);
 
-void UniqueFileDescriptor::reset(int fd)
-{
-    if (fd < INVALID_FD)
-    {
-        throw std::invalid_argument("Invalid file descriptor: must be nonnegative or -1.");
+        if (::close(fd_to_close) == -1)
+        {
+            [[maybe_unused]] const auto close_error = errno;
+            assert(close_error != EBADF);
+        }
     }
 
-    if (fd == m_unique_fd)
-    {
-        return;
-    }
-
-    reset();
-
-    m_unique_fd = fd;
+    errno = original_error;
 }
 
 int UniqueFileDescriptor::get() const noexcept

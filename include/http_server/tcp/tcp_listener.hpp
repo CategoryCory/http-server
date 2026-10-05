@@ -12,7 +12,7 @@ namespace http_server::tcp
 
 /// @brief Listens for incoming TCP connections.
 ///
-/// Owns a listening socket that is closed when the listener is destroyed or closed.
+/// Owns a listening socket that is closed when the listener is destroyed.
 class TcpListener
 {
 public:
@@ -27,10 +27,6 @@ public:
     /// Blocks until a client connects or an error occurs.
     /// @return A std::expected containing the TcpConnection on success; otherwise an unexpected SocketError.
     [[nodiscard]] std::expected<TcpConnection, SocketError> accept_connection() const;
-
-    /// @brief Closes the listening socket.
-    /// @note After calling this, the listener cannot accept new connections.
-    void close() noexcept;
 
 private:
     explicit TcpListener(core::UniqueFileDescriptor &&fd) noexcept;

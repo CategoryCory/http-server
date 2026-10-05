@@ -5,7 +5,7 @@ namespace http_server::core
 
 /// @brief Owns a POSIX file descriptor using RAII.
 ///
-/// Ensures an owned descriptor is closed when this object is destroyed or replaced.
+/// Ensures an owned descriptor is closed when this object is destroyed, reset, or reassigned.
 /// Instances cannot be copied but may be moved to transfer ownership.
 class UniqueFileDescriptor
 {
@@ -38,11 +38,6 @@ public:
 
     /// @brief Closes the owned descriptor and leaves this object empty.
     void reset() noexcept;
-
-    /// @brief Closes the owned descriptor, if any, and takes ownership of a new one.
-    /// @param fd The descriptor to own, or -1 for an empty owner.
-    /// @throws std::invalid_argument if @p fd is less than -1.
-    void reset(int fd);
 
     /// @brief Releases ownership of the descriptor without closing it.
     /// @return The previously owned descriptor, or -1 if this object was empty.

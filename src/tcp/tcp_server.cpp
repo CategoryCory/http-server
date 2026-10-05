@@ -55,11 +55,7 @@ std::expected<TcpConnection, ServerError> TcpServer::accept_connection() const
 
 void TcpServer::stop() noexcept
 {
-    if (m_listener.has_value())
-    {
-        m_listener->close();
-        m_listener.reset();
-    }
+    m_listener.reset();
 }
 
 } // namespace http_server::tcp

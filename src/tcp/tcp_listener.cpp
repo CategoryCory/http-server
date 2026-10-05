@@ -122,12 +122,4 @@ std::expected<TcpConnection, SocketError> TcpListener::accept_connection() const
 
     return TcpConnection(std::move(client_fd), client_addr);
 }
-
-void TcpListener::close() noexcept
-{
-    if (m_fd.is_valid())
-    {
-        m_fd.reset();
-    }
-}
 } // namespace http_server::tcp

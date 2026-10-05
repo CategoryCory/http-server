@@ -72,31 +72,6 @@ TEST(UniqueFileDescriptorTest, DestructionClosesDescriptor)
     EXPECT_TRUE(is_closed(fd));
 }
 
-TEST(UniqueFileDescriptorTest, ResetClosesAndReplacesDescriptor)
-{
-    const int old_fd = create_file_descriptor();
-    const int new_fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(old_fd);
-
-    descriptor.reset(new_fd);
-
-    EXPECT_TRUE(is_closed(old_fd));
-    EXPECT_EQ(descriptor.get(), new_fd);
-    EXPECT_TRUE(descriptor.is_valid());
-}
-
-TEST(UniqueFileDescriptorTest, ResetToEmptyClosesDescriptor)
-{
-    const int fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(fd);
-
-    descriptor.reset(-1);
-
-    EXPECT_TRUE(is_closed(fd));
-    EXPECT_FALSE(descriptor.is_valid());
-    EXPECT_EQ(descriptor.get(), -1);
-}
-
 TEST(UniqueFileDescriptorTest, ResetClosesDescriptorAndLeavesItEmpty)
 {
     const int fd = create_file_descriptor();
@@ -107,28 +82,6 @@ TEST(UniqueFileDescriptorTest, ResetClosesDescriptorAndLeavesItEmpty)
     EXPECT_TRUE(is_closed(fd));
     EXPECT_FALSE(descriptor.is_valid());
     EXPECT_EQ(descriptor.get(), -1);
-}
-
-TEST(UniqueFileDescriptorTest, ResetToSameDescriptorPreservesOwnership)
-{
-    const int fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(fd);
-
-    descriptor.reset(fd);
-
-    EXPECT_EQ(descriptor.get(), fd);
-    EXPECT_NE(fcntl(fd, F_GETFD), -1);
-}
-
-TEST(UniqueFileDescriptorTest, InvalidResetPreservesCurrentDescriptor)
-{
-    const int fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(fd);
-
-    EXPECT_THROW(descriptor.reset(-2), std::invalid_argument);
-
-    EXPECT_EQ(descriptor.get(), fd);
-    EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
 
 TEST(UniqueFileDescriptorTest, ReleaseTransfersOwnership)
