@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - 2026-09-19
+## [Unreleased] - 2026-10-05
 
 ### Added
 
@@ -34,3 +34,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   request processing and the long-running server loop are still planned.
 - Updated the command-line program to accept one client connection before it
   stops; persistent connection processing remains planned.
+- Removed exception thrown in `UniqueFileDescriptor` constructor in the event of an invalid descriptor.
+- Added precondition to `UniqueFileDescriptor` stating that `fd` must be a non-negative descriptor.

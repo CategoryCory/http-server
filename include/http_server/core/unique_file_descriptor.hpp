@@ -14,9 +14,11 @@ public:
     UniqueFileDescriptor() = default;
 
     /// @brief Creates an owner for a file descriptor.
-    /// @param fd The descriptor to own, or -1 for an empty owner.
-    /// @throws std::invalid_argument if @p fd is less than -1.
-    explicit UniqueFileDescriptor(int fd);
+    /// @param fd The descriptor to own.
+    /// @pre @p fd must be a non-negative descriptor.
+    /// @note @p fd should be an open descriptor that the caller is giving up
+    /// ownership of.
+    explicit UniqueFileDescriptor(int fd) noexcept;
 
     /// @brief Copy construction is disabled because descriptors have unique ownership.
     UniqueFileDescriptor(const UniqueFileDescriptor &) = delete;

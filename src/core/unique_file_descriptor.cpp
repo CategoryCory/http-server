@@ -2,21 +2,16 @@
 
 #include <cassert>
 #include <cerrno>
-#include <stdexcept>
 #include <unistd.h>
 #include <utility>
 
 namespace http_server::core
 {
 
-UniqueFileDescriptor::UniqueFileDescriptor(int fd)
+UniqueFileDescriptor::UniqueFileDescriptor(int fd) noexcept
+    : m_unique_fd{fd}
 {
-    if (fd < INVALID_FD)
-    {
-        throw std::invalid_argument("Invalid file descriptor: must be nonnegative or -1.");
-    }
-
-    m_unique_fd = fd;
+    assert(fd >= 0 && "UniqueFileDescriptor requires a non-negative file descriptor");
 }
 
 UniqueFileDescriptor::UniqueFileDescriptor(UniqueFileDescriptor &&other) noexcept
@@ -69,7 +64,7 @@ int UniqueFileDescriptor::release() noexcept
 
 bool UniqueFileDescriptor::is_valid() const noexcept
 {
-    return m_unique_fd != INVALID_FD;
+    return m_unique_fd >= 0;
 }
 
 UniqueFileDescriptor::operator bool() const noexcept

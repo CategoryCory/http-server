@@ -3,7 +3,6 @@
 #include <cerrno>
 #include <fcntl.h>
 #include <gtest/gtest.h>
-#include <stdexcept>
 #include <system_error>
 #include <unistd.h>
 #include <utility>
@@ -34,6 +33,13 @@ bool is_closed(int fd)
     errno = 0;
     return fcntl(fd, F_GETFD) == -1 && errno == EBADF;
 }
+} // namespace
+
+class UniqueFileDescriptorDeathTest : public ::testing::TestWithParam<int>
+{
+};
+
+INSTANTIATE_TEST_SUITE_P(FileDescriptors, UniqueFileDescriptorDeathTest, ::testing::Values(-2, -1));
 
 TEST(UniqueFileDescriptorTest, DefaultConstructionIsEmpty)
 {
@@ -46,22 +52,17 @@ TEST(UniqueFileDescriptorTest, DefaultConstructionIsEmpty)
     descriptor.reset();
 }
 
-TEST(UniqueFileDescriptorTest, EmptyDescriptorConstructionIsEmpty)
+TEST_P(UniqueFileDescriptorDeathTest, InvalidDescriptorIsRejected)
 {
-    const UniqueFileDescriptor descriptor(-1);
+    const int fd = GetParam();
 
-    EXPECT_FALSE(descriptor.is_valid());
-    EXPECT_EQ(descriptor.get(), -1);
-}
-
-TEST(UniqueFileDescriptorTest, ConstructionRejectsInvalidDescriptor)
-{
-    EXPECT_THROW([[maybe_unused]] UniqueFileDescriptor descriptor(-2), std::invalid_argument);
+    EXPECT_DEBUG_DEATH(UniqueFileDescriptor{fd}, "non-negative file descriptor");
 }
 
 TEST(UniqueFileDescriptorTest, DestructionClosesDescriptor)
 {
     const int fd = create_file_descriptor();
+
     {
         const UniqueFileDescriptor descriptor(fd);
         EXPECT_TRUE(descriptor.is_valid());
@@ -149,6 +150,5 @@ TEST(UniqueFileDescriptorTest, SelfMoveAssignmentPreservesDescriptor)
     EXPECT_TRUE(descriptor.is_valid());
     EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
-} // namespace
 
 } // namespace http_server::core
