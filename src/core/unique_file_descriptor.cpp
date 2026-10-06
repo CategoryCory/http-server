@@ -40,9 +40,7 @@ void UniqueFileDescriptor::reset() noexcept
 
     if (m_unique_fd != INVALID_FD)
     {
-        const auto fd_to_close = std::exchange(m_unique_fd, INVALID_FD);
-
-        if (::close(fd_to_close) == -1)
+        if (const auto fd_to_close = std::exchange(m_unique_fd, INVALID_FD); ::close(fd_to_close) == -1)
         {
             [[maybe_unused]] const auto close_error = errno;
             assert(close_error != EBADF);

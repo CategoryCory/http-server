@@ -33,11 +33,11 @@ bool is_closed(int fd)
     errno = 0;
     return fcntl(fd, F_GETFD) == -1 && errno == EBADF;
 }
-} // namespace
 
 class UniqueFileDescriptorDeathTest : public ::testing::TestWithParam<int>
 {
 };
+} // namespace
 
 INSTANTIATE_TEST_SUITE_P(FileDescriptors, UniqueFileDescriptorDeathTest, ::testing::Values(-2, -1));
 
@@ -102,7 +102,7 @@ TEST(UniqueFileDescriptorTest, MoveConstructionFromEmptyDescriptorRemainsEmpty)
 {
     UniqueFileDescriptor source;
 
-    UniqueFileDescriptor destination(std::move(source));
+    const UniqueFileDescriptor destination(std::move(source));
 
     EXPECT_FALSE(destination.is_valid());
     EXPECT_EQ(destination.get(), -1);
@@ -115,7 +115,7 @@ TEST(UniqueFileDescriptorTest, MoveConstructionTransfersOwnership)
     const int fd = create_file_descriptor();
     UniqueFileDescriptor source(fd);
 
-    UniqueFileDescriptor destination(std::move(source));
+    const UniqueFileDescriptor destination(std::move(source));
 
     EXPECT_EQ(destination.get(), fd);
     EXPECT_TRUE(destination.is_valid());
