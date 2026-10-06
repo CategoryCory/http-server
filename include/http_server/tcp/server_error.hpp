@@ -8,27 +8,29 @@
 namespace http_server::tcp
 {
 
-/// @brief Error codes for HTTP server failures.
+/// @brief Error codes for TCP server failures.
 enum class ServerErrorCode : std::uint8_t
 {
-    /// @brief Indicates a failure related to the underlying socket.
+    /// @brief A failure occurred in the underlying socket.
     socket_failure,
 
-    /// @brief Indicates that the server is not currently running.
+    /// @brief The server is not currently running.
     not_running,
 
-    /// @brief Indicates that the server is already running.
+    /// @brief The server is already running.
     already_running,
 };
 
 // TODO: Consider adding factory functions for creating common server errors.
-/// @brief Represents an error encountered by the HTTP server.
+/// @brief An error encountered by the TCP server.
 struct ServerError
 {
     /// @brief The error code indicating the type of server error.
     ServerErrorCode code;
 
-    /// @brief The socket error that caused the failure, when @ref code is socket_failure.
+    /// @brief The socket error that caused the failure.
+    ///
+    /// Engaged only when @ref code is ServerErrorCode::socket_failure.
     std::optional<SocketError> socket_error;
 };
 

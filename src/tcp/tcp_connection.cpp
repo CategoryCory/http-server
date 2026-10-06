@@ -1,5 +1,6 @@
-#include <http_server/core/unique_file_descriptor.hpp>
 #include <http_server/tcp/tcp_connection.hpp>
+
+#include <http_server/core/unique_file_descriptor.hpp>
 #include <http_server/tcp/tcp_connection_error.hpp>
 
 #include "platform.hpp"
@@ -19,7 +20,7 @@
 namespace http_server::tcp
 {
 
-TcpConnection::TcpConnection(core::UniqueFileDescriptor fd, const sockaddr_in ip_addr)
+TcpConnection::TcpConnection(core::UniqueFileDescriptor &&fd, const sockaddr_in ip_addr)
     : m_connected_client{std::move(fd)},
       m_client_endpoint(ip_addr)
 {

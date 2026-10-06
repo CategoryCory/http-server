@@ -5,13 +5,13 @@
 namespace http_server::tcp
 {
 
-/// @brief Configuration structure for the TCP server
+/// @brief Configuration for the TCP server.
 struct TcpServerConfig
 {
-    /// @brief Port number the server will listen on
+    /// @brief The port number the server listens on.
     std::uint16_t port{};
 
-    /// @brief Maximum number of pending connections the server can have in its listen queue
+    /// @brief The maximum number of pending connections in the server's listen queue.
     int max_backlog{};
 };
 

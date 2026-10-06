@@ -3,7 +3,6 @@
 #include <cerrno>
 #include <fcntl.h>
 #include <gtest/gtest.h>
-#include <stdexcept>
 #include <system_error>
 #include <unistd.h>
 #include <utility>
@@ -34,6 +33,13 @@ bool is_closed(int fd)
     errno = 0;
     return fcntl(fd, F_GETFD) == -1 && errno == EBADF;
 }
+} // namespace
+
+class UniqueFileDescriptorDeathTest : public ::testing::TestWithParam<int>
+{
+};
+
+INSTANTIATE_TEST_SUITE_P(FileDescriptors, UniqueFileDescriptorDeathTest, ::testing::Values(-2, -1));
 
 TEST(UniqueFileDescriptorTest, DefaultConstructionIsEmpty)
 {
@@ -46,22 +52,17 @@ TEST(UniqueFileDescriptorTest, DefaultConstructionIsEmpty)
     descriptor.reset();
 }
 
-TEST(UniqueFileDescriptorTest, EmptyDescriptorConstructionIsEmpty)
+TEST_P(UniqueFileDescriptorDeathTest, InvalidDescriptorIsRejected)
 {
-    const UniqueFileDescriptor descriptor(-1);
+    const int fd = GetParam();
 
-    EXPECT_FALSE(descriptor.is_valid());
-    EXPECT_EQ(descriptor.get(), -1);
-}
-
-TEST(UniqueFileDescriptorTest, ConstructionRejectsInvalidDescriptor)
-{
-    EXPECT_THROW([[maybe_unused]] UniqueFileDescriptor descriptor(-2), std::invalid_argument);
+    EXPECT_DEBUG_DEATH(UniqueFileDescriptor{fd}, "non-negative file descriptor");
 }
 
 TEST(UniqueFileDescriptorTest, DestructionClosesDescriptor)
 {
     const int fd = create_file_descriptor();
+
     {
         const UniqueFileDescriptor descriptor(fd);
         EXPECT_TRUE(descriptor.is_valid());
@@ -70,31 +71,6 @@ TEST(UniqueFileDescriptorTest, DestructionClosesDescriptor)
     }
 
     EXPECT_TRUE(is_closed(fd));
-}
-
-TEST(UniqueFileDescriptorTest, ResetClosesAndReplacesDescriptor)
-{
-    const int old_fd = create_file_descriptor();
-    const int new_fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(old_fd);
-
-    descriptor.reset(new_fd);
-
-    EXPECT_TRUE(is_closed(old_fd));
-    EXPECT_EQ(descriptor.get(), new_fd);
-    EXPECT_TRUE(descriptor.is_valid());
-}
-
-TEST(UniqueFileDescriptorTest, ResetToEmptyClosesDescriptor)
-{
-    const int fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(fd);
-
-    descriptor.reset(-1);
-
-    EXPECT_TRUE(is_closed(fd));
-    EXPECT_FALSE(descriptor.is_valid());
-    EXPECT_EQ(descriptor.get(), -1);
 }
 
 TEST(UniqueFileDescriptorTest, ResetClosesDescriptorAndLeavesItEmpty)
@@ -107,28 +83,6 @@ TEST(UniqueFileDescriptorTest, ResetClosesDescriptorAndLeavesItEmpty)
     EXPECT_TRUE(is_closed(fd));
     EXPECT_FALSE(descriptor.is_valid());
     EXPECT_EQ(descriptor.get(), -1);
-}
-
-TEST(UniqueFileDescriptorTest, ResetToSameDescriptorPreservesOwnership)
-{
-    const int fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(fd);
-
-    descriptor.reset(fd);
-
-    EXPECT_EQ(descriptor.get(), fd);
-    EXPECT_NE(fcntl(fd, F_GETFD), -1);
-}
-
-TEST(UniqueFileDescriptorTest, InvalidResetPreservesCurrentDescriptor)
-{
-    const int fd = create_file_descriptor();
-    UniqueFileDescriptor descriptor(fd);
-
-    EXPECT_THROW(descriptor.reset(-2), std::invalid_argument);
-
-    EXPECT_EQ(descriptor.get(), fd);
-    EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
 
 TEST(UniqueFileDescriptorTest, ReleaseTransfersOwnership)
@@ -196,6 +150,5 @@ TEST(UniqueFileDescriptorTest, SelfMoveAssignmentPreservesDescriptor)
     EXPECT_TRUE(descriptor.is_valid());
     EXPECT_NE(fcntl(fd, F_GETFD), -1);
 }
-} // namespace
 
 } // namespace http_server::core

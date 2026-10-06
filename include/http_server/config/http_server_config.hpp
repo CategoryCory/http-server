@@ -8,7 +8,7 @@ namespace http_server::config
 /// @brief Application-wide configuration for the HTTP server.
 struct HttpServerConfig
 {
-    /// @brief Configuration for the TCP server used by the application.
+    /// @brief The configuration for the TCP server used by the application.
     tcp::TcpServerConfig tcp_server{};
 };
 

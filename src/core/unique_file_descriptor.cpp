@@ -1,20 +1,17 @@
 #include <http_server/core/unique_file_descriptor.hpp>
 
-#include <stdexcept>
+#include <cassert>
+#include <cerrno>
 #include <unistd.h>
 #include <utility>
 
 namespace http_server::core
 {
 
-UniqueFileDescriptor::UniqueFileDescriptor(int fd)
+UniqueFileDescriptor::UniqueFileDescriptor(int fd) noexcept
+    : m_unique_fd{fd}
 {
-    if (fd < INVALID_FD)
-    {
-        throw std::invalid_argument("Invalid file descriptor: must be nonnegative or -1.");
-    }
-
-    m_unique_fd = fd;
+    assert(fd >= 0 && "UniqueFileDescriptor requires a non-negative file descriptor");
 }
 
 UniqueFileDescriptor::UniqueFileDescriptor(UniqueFileDescriptor &&other) noexcept
@@ -39,28 +36,20 @@ UniqueFileDescriptor::~UniqueFileDescriptor()
 
 void UniqueFileDescriptor::reset() noexcept
 {
+    const auto original_error = errno;
+
     if (m_unique_fd != INVALID_FD)
     {
-        close(m_unique_fd);
-        m_unique_fd = INVALID_FD;
-    }
-}
+        const auto fd_to_close = std::exchange(m_unique_fd, INVALID_FD);
 
-void UniqueFileDescriptor::reset(int fd)
-{
-    if (fd < INVALID_FD)
-    {
-        throw std::invalid_argument("Invalid file descriptor: must be nonnegative or -1.");
+        if (::close(fd_to_close) == -1)
+        {
+            [[maybe_unused]] const auto close_error = errno;
+            assert(close_error != EBADF);
+        }
     }
 
-    if (fd == m_unique_fd)
-    {
-        return;
-    }
-
-    reset();
-
-    m_unique_fd = fd;
+    errno = original_error;
 }
 
 int UniqueFileDescriptor::get() const noexcept
@@ -75,7 +64,7 @@ int UniqueFileDescriptor::release() noexcept
 
 bool UniqueFileDescriptor::is_valid() const noexcept
 {
-    return m_unique_fd != INVALID_FD;
+    return m_unique_fd >= 0;
 }
 
 UniqueFileDescriptor::operator bool() const noexcept

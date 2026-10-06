@@ -9,32 +9,34 @@ namespace http_server::tcp
 /// @brief Error codes for TCP connection failures.
 enum class TcpConnectionErrorCode : std::uint8_t
 {
-    /// @brief Failed to convert IP address to the required format.
+    /// @brief Converting the client IP address to text failed.
     ip_addr_conversion_failure,
 
-    /// @brief Send returned zero bytes sent.
+    /// @brief A send operation made no progress because zero bytes were sent.
     send_no_progress,
 
-    /// @brief The connected client was not available.
+    /// @brief A send operation failed because the client is no longer reachable.
     send_client_unavailable,
 
-    /// @brief Failed to send data.
+    /// @brief A send operation failed for another reason.
     send_general_failure,
 
-    /// @brief Indicates that the `receive` buffer had a capacity of zero.
+    /// @brief A receive operation was requested with an empty buffer.
     recv_no_buffer,
 
-    /// @brief Failed to receive data.
+    /// @brief A receive operation failed.
     recv_general_failure,
 };
 
-/// @brief Represents an error that occurred during a TCP connection attempt.
+/// @brief An error encountered during a TCP connection operation.
 struct TcpConnectionError
 {
-    /// @brief The specific error code for the TCP connection failure.
+    /// @brief The error code indicating the type of TCP connection error.
     TcpConnectionErrorCode code;
 
-    /// @brief The underlying system error code, if applicable.
+    /// @brief The underlying system error code.
+    ///
+    /// Value-initialized (no error) when the failure did not originate from a system call.
     std::error_code error_code{};
 };
 
